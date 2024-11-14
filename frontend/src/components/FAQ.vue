@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-2 space-y-2 sm:pb-10">
+  <div class="pb-2 space-y-2 sm:pb-10 max-w-[1360px] px-2 sm:px-8">
     <TextOpen
       v-for="item in faqItems"
       :is-opened="openedQuestion === item.id"

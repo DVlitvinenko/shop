@@ -1,13 +1,17 @@
 <script setup lang="ts">
+import Footer from "@components/Footer.vue";
 import Header from "@components/Header.vue";
+import { useUserStore } from "@store/useUserStore";
+
+const userStore = useUserStore();
 </script>
 
 <template>
   <div class="min-h-screen mx-auto place-items-center bg-background text-text">
-    <Header />
+    <div class="pb-32"><Header :isLogin="!!userStore.user" /></div>
     <router-view />
-    <Footer />
   </div>
+  <Footer />
 </template>
 
 <style>

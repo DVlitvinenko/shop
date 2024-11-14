@@ -12,4 +12,15 @@ interface Product {
   id: number;
 }
 
-export type { DisplayRoute, Product };
+interface StoryItem extends Product {
+  date: Date;
+}
+
+interface User {
+  id: number;
+  name: string;
+  story: StoryItem[];
+  cart: Product[];
+}
+
+export type { DisplayRoute, Product, User };

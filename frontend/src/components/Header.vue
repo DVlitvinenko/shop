@@ -47,13 +47,11 @@
           >
         </div>
       </div>
-      <div class="items-center justify-between hidden gap-2 sm:flex">
-        <router-link v-if="!isLogin" to="/login">
-          <Button variant="primary">Вход</Button>
-        </router-link>
-        <div v-if="isLogin" @click="logout">
-          <Button variant="primary">Выход</Button>
-        </div>
+      <div v-if="!isLogin">
+        <Button variant="primary" @click="login">Вход</Button>
+      </div>
+      <div v-if="isLogin" @click="logout">
+        <Button variant="primary">Выход</Button>
       </div>
     </div>
     <Transition class="" name="slide-fade">
@@ -88,13 +86,11 @@
           @click="toggleMenu"
           >Админ</router-link
         >
-        <div class="flex items-center justify-between gap-2">
-          <router-link v-if="!isLogin" to="/login">
-            <Button variant="primary">Вход</Button>
-          </router-link>
-          <div v-if="isLogin" @click="logout">
-            <Button variant="primary">Выход</Button>
-          </div>
+        <div v-if="!isLogin">
+          <Button variant="primary" @click="login">Вход</Button>
+        </div>
+        <div v-if="isLogin" @click="logout">
+          <Button variant="primary">Выход</Button>
         </div>
       </div>
     </Transition>
@@ -107,17 +103,28 @@ import { useRouter } from "vue-router";
 import logo from "@assets/logo.svg";
 import Button from "./UI/Button.vue";
 
-const isLogin = ref(false);
+interface HeaderProps {
+  isLogin: boolean;
+}
+
 const isAdmin = ref(false);
 const isMenuOpen = ref(false); // State for mobile menu visibility
 const router = useRouter();
 
+const props = defineProps<HeaderProps>();
+
+const isLogin = props.isLogin;
+
 const goMain = () => {
-  router.push("/");
+  router.push({ path: "/" });
 };
 
 const logout = () => {
   console.log("выход");
+};
+
+const login = () => {
+  router.push({ path: "/login" });
 };
 
 const toggleMenu = () => {

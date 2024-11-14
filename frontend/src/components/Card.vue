@@ -1,6 +1,8 @@
 <template>
-  <div class="w-full p-4 sm:w-1/2 md:w-1/3">
-    <div class="rounded-3xl bg-background-card">
+  <div class="w-full p-4 cursor-pointer sm:w-1/2 md:w-1/3" @click="goProduct">
+    <div
+      class="rounded-3xl bg-background-card hover:shadow-md shadow-background-card"
+    >
       <img
         :src="props.product.img"
         alt="img"
@@ -10,7 +12,9 @@
         <p class="font-semibold">{{ props.product.title }}</p>
         <p class="font-semibold text-right">{{ props.product.price }}</p>
         <p class="">{{ props.product.description }}</p>
-        <Button class="mx-auto max-w-44" @click="addToCart">В корзину</Button>
+        <Button class="mx-auto max-w-44" @click.stop="addToCart"
+          >В корзину</Button
+        >
       </div>
     </div>
   </div>
@@ -26,8 +30,17 @@ interface CardProps {
 
 const props = defineProps<CardProps>();
 
+const emit = defineEmits<{
+  (event: "go-product", id: number): void;
+  (event: "add-to-cart", product: Product): void;
+}>();
+
+const goProduct = () => {
+  emit("go-product", props.product.id);
+};
+
 const addToCart = () => {
-  console.log(props.product.id);
+  emit("add-to-cart", props.product);
 };
 </script>
 

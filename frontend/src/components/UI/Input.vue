@@ -1,6 +1,6 @@
 <template>
   <input
-    class="p-1 border-2 rounded-md border-secondary bg-background-subtle focus:outline-none"
+    class="px-6 py-3 border-2 hover:border-gray-400 rounded-button bg-background-card focus:outline-none"
     :type="type"
     :placeholder="placeholder"
     v-model="value"

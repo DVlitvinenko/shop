@@ -30,7 +30,9 @@
       "@router/*": ["src/router/*"],
       "@directives/*": ["src/directives/*"],
       "@store/*": ["src/store/*"],
-      "@assets/*": ["src/assets/*"]
+      "@assets/*": ["src/assets/*"],
+      "@utils/*": ["src/utils/*"],
+      "@hooks/*": ["src/hooks/*"]
     }
   },
   "include": [
