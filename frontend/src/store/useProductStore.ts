@@ -60,8 +60,18 @@ export const useProductStore = defineStore("products", () => {
   const cart = ref<Product[]>([]);
 
   const addToCart = (product: Product) => {
-    checkUser(() => (cart.value = [...cart.value, { ...product, count: 1 }]));
+    checkUser(
+      () =>
+        (cart.value = [
+          ...cart.value.filter((item) => item.id !== product.id),
+          { ...product, count: 1 },
+        ])
+    );
   };
 
-  return { products, cart, addToCart };
+  const dellAboutCart = (id: number) => {
+    cart.value = [...cart.value.filter((item) => item.id !== id)];
+  };
+
+  return { products, cart, addToCart, dellAboutCart };
 });

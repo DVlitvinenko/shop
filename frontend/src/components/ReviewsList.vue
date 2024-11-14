@@ -1,7 +1,16 @@
 <template>
-  <div class="flex flex-wrap items-center justify-between px-2 pb-2 sm:pb-10">
-    <Review v-for="item in reviews" :item="item" @go-review="goReview" />
-  </div>
+  <TransitionGroup
+    name="review"
+    tag="div"
+    class="flex flex-wrap items-center justify-between px-2 pb-2 sm:pb-10"
+  >
+    <Review
+      v-for="(item, i) in reviews"
+      :item="item"
+      @go-review="goReview"
+      :key="`review_${i}`"
+    />
+  </TransitionGroup>
 </template>
 
 <script setup lang="ts">
@@ -20,4 +29,14 @@ const goReview = (id: number) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.review-enter-active,
+.review-leave-active {
+  transition: all 0.5s ease;
+}
+.review-enter-from,
+.review-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+</style>

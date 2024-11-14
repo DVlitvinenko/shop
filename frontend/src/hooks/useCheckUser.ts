@@ -8,6 +8,6 @@ export const useCheckUser = () => {
   return (callback: () => void) => {
     if (!user) {
       return router.push({ path: "/login" });
-    } else callback;
+    } else callback();
   };
 };

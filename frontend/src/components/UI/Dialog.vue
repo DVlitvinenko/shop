@@ -1,13 +1,15 @@
 <template>
-  <div
-    v-show="isShowed"
-    @click.self="handleClick"
-    class="fixed left-0 z-10 flex items-center justify-center w-full h-full mt-0 bg-black -top-2 bg-opacity-20"
-  >
-    <div class="min-w-[300px] w-1/2 p-2 m-0 bg-white rounded-md">
-      <slot />
+  <Transition name="bounce" tag="div">
+    <div
+      v-show="isShowed"
+      @click.self="handleClick"
+      class="fixed top-0 left-0 z-10 flex items-center justify-center w-full h-screen mt-0 bg-black bg-opacity-20"
+    >
+      <div class="min-w-[300px] w-1/2 p-2 m-0 bg-white rounded-3xl">
+        <slot />
+      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -28,4 +30,22 @@ const handleClick = () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>

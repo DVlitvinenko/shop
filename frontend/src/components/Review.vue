@@ -1,7 +1,7 @@
 <template>
   <div class="w-full p-2 sm:w-1/2 md:w-1/3">
     <div
-      class="w-full p-2 cursor-pointer bg-background-card rounded-3xl"
+      class="w-full p-2 cursor-pointer bg-background-card hover:shadow-md shadow-background-card rounded-3xl"
       @click="emit('go-review', props.item.id)"
     >
       <div class="space-y-2 place-items-center">

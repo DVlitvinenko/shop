@@ -1,27 +1,49 @@
 <template>
   <div class="container p-6 mx-auto">
-    <h1 class="mb-6 text-3xl font-bold">User Cabinet</h1>
-
     <div class="p-6 mb-6 bg-white shadow-md rounded-3xl">
-      <h2 class="mb-4 text-2xl font-semibold">User Information</h2>
-      <p class="text-gray-700">
-        Name: <span class="font-medium">{{ user.name }}</span>
+      <p class="text-3xl text-gray-700">
+        <span class="font-medium">{{ user.name }}</span>
       </p>
-      <div class="mt-4">
-        <button
-          @click="editUser"
-          class="px-4 py-2 text-white transition duration-200 bg-blue-500 rounded-full hover:bg-blue-600"
-        >
-          Edit Profile
-        </button>
+      <div class="mt-4 w-60">
+        <Button @click="handleEdit" variant="primary"> Сменить пароль </Button>
       </div>
+      <div class="mt-4 w-60">
+        <Button @click="handleDelete" variant="primary">
+          Удалить профиль
+        </Button>
+      </div>
+      <Dialog :is-showed="isEdit" @close="handleEdit">
+        <div class="flex flex-col items-center justify-center w-full gap-2">
+          <Input
+            class="w-full"
+            v-model="pass"
+            type="password"
+            placeholder="Введите пароль"
+          />
+          <Input
+            class="w-full"
+            v-model="newPass"
+            type="password"
+            placeholder="Введите новый пароль"
+          />
+          <Input
+            class="w-full"
+            v-model="rePass"
+            type="password"
+            placeholder="Повторите новый пароль"
+          />
+          <Button class="w-56" :disabled="isDisabled" @click="handleUpdatePass"
+            >Изменить пароль</Button
+          >
+        </div>
+      </Dialog>
     </div>
 
     <div class="p-6 bg-white shadow-md rounded-3xl">
-      <h2 class="mb-4 text-2xl font-semibold">Purchase History</h2>
+      <h2 class="mb-4 text-2xl font-semibold">История покупок</h2>
       <ul>
         <li v-if="user.story.length === 0" class="text-gray-500">
-          No purchase history available.
+          Нет истории покупок
         </li>
         <li
           v-for="item in user.story"
@@ -32,7 +54,7 @@
             <div class="flex-1">
               <h3 class="font-semibold">{{ item.title }}</h3>
               <p class="text-gray-600">{{ item.description }}</p>
-              <p class="text-gray-500">Date: {{ formatDate(item.date) }}</p>
+              <p class="text-gray-500">Дата: {{ formatDate(item.date) }}</p>
             </div>
             <div class="flex items-center">
               <img
@@ -40,7 +62,7 @@
                 alt="Product Image"
                 class="object-cover w-16 h-16 rounded-3xl"
               />
-              <p class="ml-4 text-lg font-bold">${{ item.price.toFixed(2) }}</p>
+              <p class="ml-4 text-lg font-bold">{{ item.price.toFixed(2) }}р</p>
             </div>
           </div>
         </li>
@@ -50,21 +72,47 @@
 </template>
 
 <script setup lang="ts">
+import Button from "@components/UI/Button.vue";
+import Dialog from "@components/UI/Dialog.vue";
+import Input from "@components/UI/Input.vue";
 import { useUserStore } from "@store/useUserStore";
+import { ref, watch } from "vue";
 const userStore = useUserStore();
 const user = userStore.user;
 
-// Function to format date
+const isEdit = ref(false);
+const isDelete = ref(false);
+const pass = ref("");
+const rePass = ref("");
+const newPass = ref("");
+const isDisabled = ref(true);
+
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("en-US").format(date);
 };
 
-// Function to handle user profile edit
+const handleEdit = () => {
+  isEdit.value = !isEdit.value;
+};
+
+const handleDelete = () => {
+  isDelete.value = !isDelete.value;
+};
+
+const checkData = () => {
+  if (rePass.value && pass.value && rePass.value === newPass.value) {
+    return (isDisabled.value = false);
+  }
+  isDisabled.value = true;
+};
+
+watch([pass, rePass], () => checkData());
+
 const editUser = () => {
   alert("Edit user profile functionality is not implemented yet.");
 };
+
+const handleUpdatePass = () => {};
 </script>
 
-<style scoped>
-/* You can add any additional styles here if needed */
-</style>
+<style scoped></style>

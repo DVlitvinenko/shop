@@ -34,23 +34,25 @@
         <div class="items-center justify-between hidden gap-2 sm:flex">
           <router-link class="p-2 rounded-md" to="/">Главная</router-link>
           <router-link class="p-2 rounded-md" to="/products"
-            >Каталог</router-link
-          >
-          <router-link class="p-2 rounded-md" v-if="isLogin" to="/catalog"
-            >Корзина</router-link
-          >
+            >Каталог
+          </router-link>
+          <router-link class="p-2 rounded-md" v-if="isLogin" to="/cart"
+            >Корзина{{
+              productStore.cart.length ? ` (${productStore.cart.length})` : ""
+            }}
+          </router-link>
           <router-link class="p-2 rounded-md" v-if="isLogin" to="/cabinet"
-            >Кабинет</router-link
-          >
+            >Кабинет
+          </router-link>
           <router-link class="p-2 rounded-md" v-if="isAdmin" to="/admin"
-            >Админ</router-link
-          >
+            >Админ
+          </router-link>
         </div>
       </div>
-      <div v-if="!isLogin">
+      <div class="hidden sm:block" v-if="!isLogin">
         <Button variant="primary" @click="login">Вход</Button>
       </div>
-      <div v-if="isLogin" @click="logout">
+      <div class="hidden sm:block" v-if="isLogin" @click="logout">
         <Button variant="primary">Выход</Button>
       </div>
     </div>
@@ -102,6 +104,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import logo from "@assets/logo.svg";
 import Button from "./UI/Button.vue";
+import { useProductStore } from "@store/useProductStore";
 
 interface HeaderProps {
   isLogin: boolean;
@@ -110,6 +113,8 @@ interface HeaderProps {
 const isAdmin = ref(false);
 const isMenuOpen = ref(false); // State for mobile menu visibility
 const router = useRouter();
+
+const productStore = useProductStore();
 
 const props = defineProps<HeaderProps>();
 

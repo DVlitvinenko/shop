@@ -1,12 +1,17 @@
 <template>
-  <Button @click="filtersShow" class="mb-2 sm:hidden">Фильтры</Button>
+  <Button
+    @click="filtersShow"
+    class="fixed w-32 mb-2 top-24 sm:right-10 right-2"
+    >Фильтры</Button
+  >
   <div class="flex space-x-2">
-    <div class="hidden w-1/3 p-2 rounded-md sm:block bg-background-card">
-      <Filters />
+    <div class="">
+      <ProductList />
     </div>
-    <div class=""><ProductList /></div>
   </div>
-  <Dialog @close="filtersShow" :is-showed="isShowed"><Filters /></Dialog>
+  <Dialog @close="filtersShow" :is-showed="isShowed">
+    <Filters />
+  </Dialog>
 </template>
 
 <script setup lang="ts">
