@@ -10,7 +10,7 @@
     <h2 class="pt-4 text-xl font-bold text-center sm:pb-4 sm:pt-8 sm:text-4xl">
       Топ товаров
     </h2>
-    <ProductList />
+    <ProductList :products="promoProducts" />
   </section>
   <section
     key="discount"
@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import client from "@client/client";
 import About from "@components/About.vue";
 import Discount from "@components/Discount.vue";
 import FAQ from "@components/FAQ.vue";
@@ -50,6 +51,23 @@ import NewsList from "@components/NewsList.vue";
 import ProductList from "@components/ProductList.vue";
 import Promo from "@components/Promo.vue";
 import ReviewsList from "@components/ReviewsList.vue";
+import { useProductStore } from "@store/useProductStore";
+import { computed, onMounted } from "vue";
+
+const productStore = useProductStore();
+
+const promoProducts = computed(() => productStore.promoProducts ?? []);
+
+const getPromoProducts = async () => {
+  const data = await client.getProducts({
+    count: { min: 1 },
+    sort: "rating-desc",
+    limit: 6,
+  });
+  productStore.setPromoProducts(data);
+};
+
+onMounted(() => getPromoProducts());
 </script>
 
 <style scoped></style>

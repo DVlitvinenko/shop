@@ -11,15 +11,15 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'price' => $this->faker->randomFloat(2, 100, 100000),
-            'title' => $this->faker->words(2, true),
-            'description' => $this->faker->sentence(),
-            'class' => $this->faker->randomElement(ClothingClass::cases())->value,
-            'type' => $this->faker->randomElement(ClothingType::cases())->value,
-            'count' => $this->faker->numberBetween(1, 100),
-            'model' => $this->faker->word(),
-            'brand' => $this->faker->company(),
-            'color' => $this->faker->colorName(),
+            'price' => fake()->randomFloat(2, 100, 100000),
+            'title' => fake()->words(2, true),
+            'description' => fake()->sentence(),
+            'class' => fake()->randomElement(ClothingClass::cases())->value,
+            'type' => fake()->randomElement(ClothingType::cases())->value,
+            'count' => fake()->numberBetween(1, 100),
+            'model' => fake()->word(),
+            'brand' => fake()->company(),
+            'color' => fake()->colorName(),
         ];
     }
 }

@@ -6,7 +6,7 @@
   >
   <div class="flex space-x-2">
     <div class="">
-      <ProductList />
+      <ProductList :products="products" />
     </div>
   </div>
   <Dialog @close="filtersShow" :is-showed="isShowed">
@@ -15,17 +15,29 @@
 </template>
 
 <script setup lang="ts">
+import { getProducts } from "@client/productService";
 import Filters from "@components/Filters.vue";
 import ProductList from "@components/ProductList.vue";
 import Button from "@components/UI/Button.vue";
 import Dialog from "@components/UI/Dialog.vue";
-import { ref } from "vue";
+import { useProductStore } from "@store/useProductStore";
+import { FiltersType } from "@typesDir/types";
+import { computed, onMounted, ref } from "vue";
+
+const defaultFilters: FiltersType = {};
 
 const isShowed = ref(false);
+const filters = ref<FiltersType>(defaultFilters);
+
+const productStore = useProductStore();
+
+const products = computed(() => productStore.products ?? []);
 
 const filtersShow = () => {
   isShowed.value = !isShowed.value;
 };
+
+onMounted(() => getProducts(filters.value));
 </script>
 
 <style scoped></style>

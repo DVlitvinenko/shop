@@ -4,7 +4,6 @@ import Cabinet from "@pages/Cabinet.vue";
 import Login from "@pages/Login.vue";
 import Main from "@pages/Main.vue";
 import NewsPage from "@pages/NewsPage.vue";
-import NotFound from "@pages/NotFound.vue";
 import Orders from "@pages/Orders.vue";
 import Product from "@pages/Product.vue";
 import Products from "@pages/Products.vue";
@@ -42,7 +41,7 @@ const routes = [
       id: Number(route.params.id),
     }),
   },
-  { path: "/:catchAll(.*)", component: NotFound },
+  { path: "/:catchAll(.*)", component: Main },
 ];
 
 const router = createRouter({

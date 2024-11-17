@@ -100,33 +100,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import logo from "@assets/logo.svg";
 import Button from "./UI/Button.vue";
 import { useProductStore } from "@store/useProductStore";
-
-interface HeaderProps {
-  isLogin: boolean;
-}
+import client from "@client/client";
+import { useUserStore } from "@store/useUserStore";
 
 const isAdmin = ref(false);
 const isMenuOpen = ref(false); // State for mobile menu visibility
 const router = useRouter();
 
+const userStore = useUserStore();
+
 const productStore = useProductStore();
 
-const props = defineProps<HeaderProps>();
-
-const isLogin = props.isLogin;
+const isLogin = ref(false);
 
 const goMain = () => {
   router.push({ path: "/" });
 };
 
-const logout = () => {
-  console.log("выход");
+const logout = async () => {
+  try {
+    await client.logout();
+  } catch (error) {
+    console.log(error);
+  }
+  userStore.unsetUser();
 };
+
+watch(
+  () => userStore.user,
+  () => {
+    isLogin.value = userStore.checkUser();
+  },
+  { deep: true }
+);
 
 const login = () => {
   router.push({ path: "/login" });

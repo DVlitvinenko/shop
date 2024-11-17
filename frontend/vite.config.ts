@@ -5,6 +5,10 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  server: {
+    host: "127.0.0.1",
+    port: 5173,
+  },
   resolve: {
     alias: {
       "@components": path.resolve(__dirname, "src/components"),

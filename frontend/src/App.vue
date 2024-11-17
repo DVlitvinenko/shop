@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import Footer from "@components/Footer.vue";
 import Header from "@components/Header.vue";
-import { useUserStore } from "@store/useUserStore";
+import { useCheckAuth } from "@hooks/useCheckAuth";
+import { onMounted } from "vue";
 
-const userStore = useUserStore();
+const checkAuth = useCheckAuth();
+
+onMounted(async () => {
+  await checkAuth();
+});
 </script>
 
 <template>
   <div class="min-h-screen mx-auto place-items-center bg-background text-text">
-    <div class="pb-32"><Header :isLogin="!!userStore.user" /></div>
+    <div class="pb-32">
+      <Header />
+    </div>
     <router-view />
   </div>
   <Footer />

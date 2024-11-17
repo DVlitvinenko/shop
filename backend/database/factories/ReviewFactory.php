@@ -13,9 +13,9 @@ class ReviewFactory extends Factory
         return [
             'product_id' => Product::inRandomOrder()->first()->id,
             'user_id' => User::inRandomOrder()->first()->id,
-            'title' => $this->faker->sentence(),
-            'rating' => $this->faker->numberBetween(1, 5),
-            'body' => $this->faker->paragraph(),
+            'title' => fake()->sentence(),
+            'rating' => fake()->numberBetween(1, 5),
+            'body' => fake()->paragraph(),
         ];
     }
 }

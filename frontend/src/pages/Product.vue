@@ -34,7 +34,15 @@ const props = defineProps<CardProps>();
 
 const productStore = useProductStore();
 
-const product = productStore.products.find((item) => item.id === props.id);
+const findProduct = () => {
+  const result = productStore.products?.find((item) => item.id === props.id);
+  if (result) {
+    return result;
+  }
+  return productStore.promoProducts?.find((item) => item.id === props.id);
+};
+
+const product = findProduct();
 
 const addToCart = (product: Product) => {
   productStore.addToCart(product);

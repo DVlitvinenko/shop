@@ -9,7 +9,7 @@
       @dell-about-cart="dellAboutCart"
       @add-to-cart="addToCart"
       @go-product="goProduct"
-      v-for="product in productStore.products"
+      v-for="product in props.products"
       :product="product"
       :key="`product_${product.id}`"
     />
@@ -21,6 +21,8 @@ import { useRouter } from "vue-router";
 import Card from "./Card.vue";
 import { useProductStore } from "@store/useProductStore";
 import { Product } from "@typesDir/types";
+
+const props = defineProps<{ products: Product[] }>();
 
 const productStore = useProductStore();
 
