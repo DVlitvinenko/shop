@@ -2,7 +2,7 @@
   <TransitionGroup
     name="product"
     tag="div"
-    class="flex flex-wrap items-center justify-center p-4"
+    class="flex flex-wrap items-stretch p-4"
   >
     <Card
       :in-cart="checkInCart(product)"

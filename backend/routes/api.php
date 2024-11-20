@@ -14,11 +14,10 @@ Route::post('register', [AuthorizationController::class, 'register']);
 Route::post('login', [AuthorizationController::class, 'login']);
 
 
-Route::get('products', [ProductController::class, 'index']);
-Route::get('products/promo', [ProductController::class, 'promo']);
+Route::post('products', [ProductController::class, 'getProductByFilters']);
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-    Route::post('products', [ProductController::class, 'store']);
+    Route::post('products/create', [ProductController::class, 'store']);
     Route::put('products/{product}', [ProductController::class, 'update']);
     Route::delete('products/{product}', [ProductController::class, 'destroy']);
 });

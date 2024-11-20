@@ -64,10 +64,14 @@ const getPromoProducts = async () => {
     sort: "rating-desc",
     limit: 6,
   });
-  productStore.setPromoProducts(data);
+  productStore.setPromoProducts(data.products);
 };
 
-onMounted(() => getPromoProducts());
+onMounted(() => {
+  if (!productStore.promoProducts) {
+    getPromoProducts();
+  }
+});
 </script>
 
 <style scoped></style>

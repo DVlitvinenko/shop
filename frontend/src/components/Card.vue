@@ -1,35 +1,59 @@
 <template>
-  <div class="flex w-full p-4 sm:w-1/2 md:w-1/3" @click="goProduct">
+  <div class="flex w-full p-2 sm:w-1/2 md:w-1/3 lg:w-1/4" @click="goProduct">
     <div
-      class="flex flex-col flex-1 cursor-pointer rounded-3xl bg-background-card hover:shadow-md shadow-background-card"
+      class="relative flex flex-col overflow-hidden transition-shadow duration-300 bg-white shadow-md cursor-pointer rounded-3xl hover:shadow-lg"
     >
       <img
-        :src="props.product.img"
-        alt="img"
-        class="object-cover object-center w-full h-72 rounded-3xl"
+        :src="props.product.image ?? 'placeholder.jpg'"
+        alt="Product Image"
+        class="object-cover object-center w-full bg-gray-200 min-h-64"
       />
       <div
-        class="flex flex-col items-start justify-between flex-grow gap-2 p-4"
+        v-if="props.product.average_rating"
+        class="absolute top-0 flex items-center gap-1 text-yellow-500 right-1"
       >
-        <p class="font-semibold">{{ props.product.title }}</p>
-        <p class="font-semibold text-right">{{ props.product.price }}</p>
-        <p class="">{{ props.product.description }}</p>
-        <Button
-          v-if="!inCart"
-          variant="primary"
-          class="mx-auto max-w-44"
-          @click.stop="addToCart"
-        >
-          В корзину
-        </Button>
-        <Button
-          v-else
-          class="mx-auto max-w-44"
-          variant="danger"
-          @click.stop="dellAboutCart"
-        >
-          Из корзины
-        </Button>
+        <Star class="my-2" :max="5" :rating="rating" />
+      </div>
+      <div class="flex flex-col justify-between h-full p-2">
+        <div class="flex items-center justify-between">
+          <h3 class="px-1 text-lg font-semibold text-gray-800 truncate">
+            {{ props.product.title }}
+          </h3>
+          <span class="text-lg font-semibold text-gray-800">
+            {{ props.product.price }} ₽
+          </span>
+        </div>
+
+        <div class="flex flex-wrap items-center text-sm text-gray-700">
+          <span
+            v-for="(item, i) in productProperties"
+            :key="`param_${props.product.id}_${i}`"
+            class="px-1 rounded-sm text-bold"
+          >
+            <span v-if="item.value"> {{ item.value }}</span>
+          </span>
+        </div>
+        <p class="px-1 mt-1 text-sm text-gray-500">
+          {{ description || "Описание отсутствует" }}
+        </p>
+        <div class="mt-1">
+          <Button
+            v-if="!inCart"
+            variant="primary"
+            class="w-full"
+            @click.stop="addToCart"
+          >
+            В корзину
+          </Button>
+          <Button
+            v-else
+            variant="danger"
+            class="w-full"
+            @click.stop="dellAboutCart"
+          >
+            Удалить из корзины
+          </Button>
+        </div>
       </div>
     </div>
   </div>
@@ -38,6 +62,11 @@
 <script setup lang="ts">
 import { Product } from "@typesDir/types";
 import Button from "./UI/Button.vue";
+import { translateToRussian } from "@utils/utils";
+import { ClothingClasses } from "@constants/ClothingClass";
+import { ClothingTypes } from "@constants/ClothingType";
+import { ClothingColors } from "@constants/ClosingColor";
+import Star from "./UI/Star.vue";
 
 interface CardProps {
   product: Product;
@@ -45,6 +74,15 @@ interface CardProps {
 }
 
 const props = defineProps<CardProps>();
+
+const rating =
+  props.product.average_rating &&
+  Math.floor(props.product.average_rating * 10) / 10;
+
+const description =
+  props.product.description.length > 150
+    ? `${props.product.description.slice(0, 150)}...`
+    : props.product.description;
 
 const emit = defineEmits<{
   (event: "go-product", id: number): void;
@@ -63,6 +101,43 @@ const addToCart = () => {
 const dellAboutCart = () => {
   emit("dell-about-cart", props.product.id);
 };
-</script>
 
-<style scoped></style>
+const productProperties = [
+  {
+    type: "class",
+    value: props.product.class
+      ? `${translateToRussian(props.product.class, ClothingClasses)} одежда,`
+      : " одежда,",
+    onClick: () => console.log("Класс кликнут"),
+    text: "Класс",
+  },
+  {
+    type: "type",
+    value: props.product.type
+      ? translateToRussian(props.product.type, ClothingTypes)
+      : "",
+    onClick: () => console.log("Тип кликнут"),
+    text: "Тип",
+  },
+  {
+    type: "brand",
+    value: props.product.brand ?? "",
+    onClick: () => console.log("Бренд кликнут"),
+    text: "Бренд",
+  },
+  {
+    type: "model",
+    value: props.product.model ?? "",
+    onClick: () => console.log("Модель кликнута"),
+    text: "Модель",
+  },
+  {
+    type: "color",
+    value: props.product.color
+      ? `Цвет: ${translateToRussian(props.product.color, ClothingColors)}`
+      : "",
+    onClick: () => console.log("Цвет кликнут"),
+    text: "Цвет",
+  },
+];
+</script>

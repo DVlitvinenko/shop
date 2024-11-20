@@ -4,7 +4,7 @@
     class="flex max-w-[1360px] flex-col w-full gap-2 p-2 sm:px-10 sm:py-10 sm:flex-row"
   >
     <img
-      :src="product.img"
+      :src="product.image ?? ''"
       alt="img"
       class="object-cover object-center w-full sm:w-1/3 h-72 rounded-3xl"
     />

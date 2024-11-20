@@ -3,34 +3,37 @@
     class="px-6 py-3 border-2 hover:border-gray-400 rounded-button bg-background-card focus:outline-none"
     :type="type"
     :placeholder="placeholder"
-    v-model="value"
+    :value="modelValue"
+    @input="updateValue"
   />
 </template>
 
 <script setup lang="ts">
-import { InputTypeHTMLAttribute, PropType } from "vue";
+import { defineProps, defineEmits, PropType } from "vue";
 
 type ModelValue = string | number;
 
-interface InputProps {
-  type?: InputTypeHTMLAttribute;
-  placeholder?: string;
-}
-
-defineOptions({
-  name: "my-input",
-});
-
-const value = defineModel<ModelValue>();
-
-const { type, placeholder } = defineProps({
+const props = defineProps({
   type: {
-    type: String as PropType<InputProps["type"]>,
+    type: String,
     default: "text",
   },
   placeholder: {
-    type: String as PropType<InputProps["placeholder"]>,
+    type: String,
     default: "Введите значение",
   },
+  modelValue: {
+    type: [String, Number] as PropType<ModelValue>,
+    default: "",
+  },
 });
+
+const emit = defineEmits<{
+  (event: "update:modelValue", value: ModelValue): void;
+}>();
+
+const updateValue = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  emit("update:modelValue", target.value);
+};
 </script>

@@ -4,12 +4,20 @@ interface DisplayRoute {
 }
 
 interface Product {
-  title: string;
-  img: string;
-  price: number;
-  description: string;
-  count: number;
-  id: number;
+  id: number; // Unique identifier for the product
+  price: string; // Price as a string (could be a number, but it's shown as a string in the JSON)
+  title: string; // Title of the product
+  description: string; // Description of the product
+  class: string; // Class/category of the product
+  type: string; // Type of product (e.g., Hoodie, Sweater, etc.)
+  count: number; // Available count of the product
+  model: string; // Model identifier
+  brand: string; // Brand name
+  image: string | null; // Image URL or null if no image is available
+  color: string; // Color of the product
+  created_at: string; // Creation date in ISO format
+  updated_at: string; // Last update date in ISO format
+  average_rating: number;
 }
 
 interface StoryItem extends Product {
@@ -85,7 +93,10 @@ interface FiltersType {
   model?: string; // Поиск по модели
   sort?: Sort;
   limit?: number;
+  offset?: number;
 }
+
+type TranslationMap = Record<string, string>;
 
 export type {
   DisplayRoute,
@@ -95,4 +106,5 @@ export type {
   Method,
   FiltersType,
   Sort,
+  TranslationMap,
 };

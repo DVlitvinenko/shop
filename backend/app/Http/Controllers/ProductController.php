@@ -13,18 +13,141 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-    public function promo()
+    public function getProductByFilters(Request $request)
     {
-        $products = Product::select('products.*')
-            ->join('reviews', 'reviews.product_id', '=', 'products.id')
-            ->selectRaw('AVG(reviews.rating) as avg_rating')
-            ->groupBy('products.id')
-            ->orderByDesc('avg_rating')
-            ->take(6)
+        $price = $request->input('price', []);
+        $text = $request->input('text');
+        $classes = $request->input('class', []);
+        $types = $request->input('type', []);
+        $brand = $request->input('brand');
+        $count = $request->input('count', []);
+        $model = $request->input('model');
+        $sort = $request->input('sort');
+        $limit = $request->input('limit', 6);
+        $offset = $request->input('offset', 0);
+
+        // Базовый запрос для получения продуктов
+        $baseQuery = Product::query()
+            ->selectRaw(
+                'products.*,
+            COALESCE(AVG(reviews.rating), 0) as average_rating,
+            COUNT(reviews.id) as reviews_count'
+            )
+            ->leftJoin('reviews', 'reviews.product_id', '=', 'products.id')
+            ->groupBy('products.id');
+
+        // Фильтры
+        if (!empty($price['min'])) {
+            $baseQuery->where('price', '>=', $price['min']);
+        }
+
+        if (!empty($price['max'])) {
+            $baseQuery->where('price', '<=', $price['max']);
+        }
+
+        if (!empty($text)) {
+            $baseQuery->where(function ($q) use ($text) {
+                $q->where('title', 'like', '%' . $text . '%')
+                    ->orWhere('description', 'like', '%' . $text . '%');
+            });
+        }
+
+        if (!empty($classes)) {
+            $baseQuery->whereIn('class', $classes);
+        }
+
+        if (!empty($types)) {
+            $baseQuery->whereIn('type', $types);
+        }
+
+        if (!empty($brand)) {
+            $baseQuery->where('brand', $brand);
+        }
+
+        if (!empty($count['min'])) {
+            $baseQuery->where('count', '>=', $count['min']);
+        }
+
+        if (!empty($count['max'])) {
+            $baseQuery->where('count', '<=', $count['max']);
+        }
+
+        if (!empty($model)) {
+            $baseQuery->where('model', 'like', '%' . $model . '%');
+        }
+
+        // Считаем общее количество продуктов БЕЗ groupBy
+        $totalCountQuery = Product::query();
+
+        if (!empty($price['min'])) {
+            $totalCountQuery->where('price', '>=', $price['min']);
+        }
+
+        if (!empty($price['max'])) {
+            $totalCountQuery->where('price', '<=', $price['max']);
+        }
+
+        if (!empty($text)) {
+            $totalCountQuery->where(function ($q) use ($text) {
+                $q->where('title', 'like', '%' . $text . '%')
+                    ->orWhere('description', 'like', '%' . $text . '%');
+            });
+        }
+
+        if (!empty($classes)) {
+            $totalCountQuery->whereIn('class', $classes);
+        }
+
+        if (!empty($types)) {
+            $totalCountQuery->whereIn('type', $types);
+        }
+
+        if (!empty($brand)) {
+            $totalCountQuery->where('brand', $brand);
+        }
+
+        if (!empty($count['min'])) {
+            $totalCountQuery->where('count', '>=', $count['min']);
+        }
+
+        if (!empty($count['max'])) {
+            $totalCountQuery->where('count', '<=', $count['max']);
+        }
+
+        if (!empty($model)) {
+            $totalCountQuery->where('model', 'like', '%' . $model . '%');
+        }
+
+        $totalCount = $totalCountQuery->count();
+
+        // Сортировка
+        $sortOptions = [
+            'price-asc' => ['price', 'asc'],
+            'price-desc' => ['price', 'desc'],
+            'rating-asc' => ['average_rating', 'asc'],
+            'rating-desc' => ['average_rating', 'desc'],
+            'count-asc' => ['count', 'asc'],
+            'count-desc' => ['count', 'desc'],
+            'default' => ['price', 'asc'],
+        ];
+
+        $sortField = $sortOptions[$sort] ?? $sortOptions['default'];
+        $baseQuery->orderBy($sortField[0], $sortField[1]);
+
+        // Пагинация
+        $products = $baseQuery->skip($offset)
+            ->take($limit)
             ->get();
 
-        return response()->json($products);
+        return response()->json([
+            'products' => $products,
+            'total_count' => $totalCount
+        ]);
     }
+
+
+
+
 
     public function create()
     {

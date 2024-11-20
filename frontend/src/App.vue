@@ -3,6 +3,7 @@ import Footer from "@components/Footer.vue";
 import Header from "@components/Header.vue";
 import { useCheckAuth } from "@hooks/useCheckAuth";
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 const checkAuth = useCheckAuth();
 
@@ -18,7 +19,7 @@ onMounted(async () => {
     </div>
     <router-view />
   </div>
-  <Footer />
+  <Footer v-if="$route.path !== '/products'" />
 </template>
 
 <style>
