@@ -36,7 +36,7 @@ function translateToEnglish(
 
 const getDataArray = <T extends object>(obj: T) => {
   return Object.entries(obj).map(([key, value]) => ({
-    name: value,
+    name: value as string,
     value: key,
   }));
 };

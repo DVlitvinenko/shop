@@ -22,9 +22,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('products/{product}', [ProductController::class, 'destroy']);
 });
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('products/{product}', [ProductController::class, 'show']);
-});
+Route::get('products/{product}', [ProductController::class, 'getProduct']);
 
 Route::apiResource('reviews', ReviewController::class);
 Route::apiResource('orders', OrderController::class);

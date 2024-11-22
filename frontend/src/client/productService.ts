@@ -1,4 +1,4 @@
-import { FiltersType, Product } from "@typesDir/types";
+import { FiltersType, Product, Review } from "@typesDir/types";
 import { axiosInstance } from "./axiosInstance";
 
 const getProducts = async (
@@ -13,4 +13,16 @@ const getProducts = async (
   }
 };
 
-export { getProducts };
+const getProduct = async (
+  id: number
+): Promise<{ product: Product; reviews: Review }> => {
+  try {
+    const response = await axiosInstance.get(`/products/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw new Error("Failed to fetch products");
+  }
+};
+
+export { getProducts, getProduct };

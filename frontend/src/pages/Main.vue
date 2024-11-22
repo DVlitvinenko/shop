@@ -1,7 +1,7 @@
 <template>
   <section
     key="promo"
-    class="relative z-0 w-screen -mt-32 bg-slate-700 sm:min-h-96 min-h-48"
+    class="relative z-0 w-screen -mt-16 sm:-mt-32 bg-slate-700 sm:min-h-96 min-h-48"
   >
     <Promo />
   </section>

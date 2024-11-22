@@ -3,7 +3,6 @@ import Footer from "@components/Footer.vue";
 import Header from "@components/Header.vue";
 import { useCheckAuth } from "@hooks/useCheckAuth";
 import { onMounted } from "vue";
-import { useRouter } from "vue-router";
 
 const checkAuth = useCheckAuth();
 
@@ -14,7 +13,7 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen mx-auto place-items-center bg-background text-text">
-    <div class="pb-32">
+    <div class="pb-16 sm:pb-32">
       <Header />
     </div>
     <router-view />

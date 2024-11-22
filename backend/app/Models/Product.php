@@ -18,6 +18,7 @@ class Product extends Model
         'count',
         'model',
         'brand',
+        'color'
     ];
 
     public function reviews()

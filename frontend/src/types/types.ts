@@ -1,3 +1,4 @@
+import { ClothingColors } from "../constants/ClosingColor";
 interface DisplayRoute {
   name: string;
   path: string;
@@ -18,6 +19,17 @@ interface Product {
   created_at: string; // Creation date in ISO format
   updated_at: string; // Last update date in ISO format
   average_rating: number;
+}
+interface Review {
+  id: number;
+  product_id: number;
+  user_id: number;
+  rating: number;
+  title: string;
+  body: string;
+  created_at: string;
+  updated_at: string;
+  user: User;
 }
 
 interface StoryItem extends Product {
@@ -77,6 +89,7 @@ type Sort =
   | "count-asc"
   | "cont-desc"
   | "default";
+
 interface FiltersType {
   price?: {
     min?: number; // Минимальная цена
@@ -85,6 +98,7 @@ interface FiltersType {
   text?: string;
   class?: ProductClass[]; // Фильтрация по классам одежды (можно выбрать несколько)
   type?: ProductType[]; // Фильтрация по типам одежды (можно выбрать несколько)
+  color?: (typeof ClothingColors)[];
   brand?: string; // Поиск по бренду
   count?: {
     min?: number; // Минимальное количество на складе
@@ -107,4 +121,5 @@ export type {
   FiltersType,
   Sort,
   TranslationMap,
+  Review,
 };

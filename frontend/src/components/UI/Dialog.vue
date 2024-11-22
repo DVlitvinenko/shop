@@ -1,11 +1,14 @@
 <template>
   <Transition name="bounce" tag="div">
     <div
-      v-show="isShowed"
+      v-show="props.isShowed"
       @click.self="handleClick"
-      class="fixed top-0 left-0 z-10 flex items-center justify-center w-full h-screen mt-0 bg-black bg-opacity-20"
+      class="fixed top-0 left-0 z-10 flex items-center justify-center w-screen h-screen mt-0 bg-black bg-opacity-20"
     >
-      <div class="min-w-[300px] w-1/2 p-2 m-0 bg-white rounded-3xl">
+      <div
+        @scroll.self
+        class="min-w-[300px] container w-1/2 p-2 m-0 bg-white max-h-[90%] overflow-y-auto rounded-3xl"
+      >
         <slot />
       </div>
     </div>
@@ -21,7 +24,7 @@ defineOptions({
   name: "my-dialog",
 });
 
-const { isShowed } = defineProps<DialogProps>();
+const props = defineProps<DialogProps>();
 
 const emit = defineEmits<{ (event: "close"): void }>();
 
@@ -47,5 +50,11 @@ const handleClick = () => {
   100% {
     transform: scale(1);
   }
+}
+.container {
+  overflow: -moz-scrollbars-none;
+}
+.container::-webkit-scrollbar {
+  display: none;
 }
 </style>

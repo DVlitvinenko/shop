@@ -1,40 +1,22 @@
 <template>
-  <div>
-    <div class="space-y-4 text-sm">
-      <div class="flex flex-col justify-between gap-2 sm:flex-row">
-        <ul class="w-full p-1 border-2 rounded-3xl">
-          <li
-            class="flex items-center justify-between p-1 cursor-pointer hover:shadow-md rounded-3xl"
-            v-for="{ value, name } in productClasses"
-            :key="value"
-            @click="updateClass(value as ProductClass)"
-          >
-            <span>{{ name }}</span
-            ><span
-              :class="`flex items-center justify-center w-5 h-5 border-2 rounded-full ${localFilters.class?.includes(value as ProductClass)} `"
-            >
-              <font-awesome-icon
-                v-if="localFilters.class?.includes(value as ProductClass)"
-                icon="check"
-            /></span>
-          </li>
-        </ul>
-        <ul class="w-full p-1 border-2 rounded-3xl">
-          <li
-            class="flex items-center justify-between p-1 cursor-pointer hover:shadow-md rounded-3xl"
-            v-for="{ value, name } in productTypes"
-            @click="updateType(value as ProductType)"
-          >
-            <span>{{ name }}</span
-            ><span
-              :class="`flex items-center justify-center w-5 h-5 border-2 rounded-full ${localFilters.type?.includes(value as ProductType)} `"
-            >
-              <font-awesome-icon
-                v-if="localFilters.type?.includes(value as ProductType)"
-                icon="check"
-            /></span>
-          </li>
-        </ul>
+  <div class="pb-6 sm:pb-0">
+    <div class="space-y-2 text-sm sm:space-y-4">
+      <div class="flex flex-col flex-wrap justify-between gap-2 sm:flex-row">
+        <CheckboxList
+          :list="productClasses"
+          :checked-list="localFilters.class ?? []"
+          @click="(value) => updateArrayFilter('class', value)"
+        />
+        <CheckboxList
+          :list="productTypes"
+          :checked-list="localFilters.type ?? []"
+          @click="(value) => updateArrayFilter('type', value)"
+        />
+        <CheckboxList
+          :list="productColors"
+          :checked-list="localFilters.color ?? []"
+          @click="(value) => updateArrayFilter('color', value)"
+        />
       </div>
 
       <div
@@ -75,7 +57,12 @@
         />
       </div>
     </div>
-    <Button class="mt-4" @click="applyFilters">Применить фильтры</Button>
+    <Button
+      class="absolute bottom-0 left-0 right-0 w-full mx-auto rounded-none sm:rounded-button sm:relative sm:w-full sm:mt-4"
+      @click="applyFilters"
+    >
+      Применить фильтры
+    </Button>
   </div>
 </template>
 
@@ -88,8 +75,10 @@ import Button from "./UI/Button.vue";
 
 import { ClothingClasses } from "@constants/ClothingClass";
 import { getDataArray } from "@utils/utils";
-import { FiltersType, ProductClass, ProductType } from "@typesDir/types";
+import { FiltersType, ProductType } from "@typesDir/types";
 import { ClothingTypes } from "@constants/ClothingType";
+import CheckboxList from "./UI/CheckboxList.vue";
+import { ClothingColors } from "@constants/ClosingColor";
 
 const props = defineProps<{ filters: FiltersType }>();
 
@@ -104,6 +93,8 @@ const productClasses = getDataArray(ClothingClasses);
 
 const productTypes = getDataArray(ClothingTypes);
 
+const productColors = getDataArray(ClothingColors);
+
 const sortOptions = [
   { value: "price-asc", name: "Цена: по возрастанию" },
   { value: "price-desc", name: "Цена: по убыванию" },
@@ -112,41 +103,40 @@ const sortOptions = [
   { value: "default", name: "По умолчанию" },
 ];
 
-const updateClass = (value: ProductClass) => {
-  if (localFilters.value.class?.includes(value as ProductClass)) {
-    return (localFilters.value = {
-      ...localFilters.value,
-      class: [...localFilters.value.class.filter((item) => item !== value)],
-    });
-  }
-  if (localFilters.value.class) {
-    return (localFilters.value = {
-      ...localFilters.value,
-      class: [...localFilters.value.class, value],
-    });
-  }
-  localFilters.value = {
-    ...localFilters.value,
-    class: [value],
-  };
-};
+type ArrayFilterKey = "class" | "color" | "type";
 
-const updateType = (value: ProductType) => {
-  if (localFilters.value.type?.includes(value as ProductType)) {
-    return (localFilters.value = {
+const checkIncludes = <T>(arr: readonly T[], x: T): boolean => arr.includes(x);
+
+const updateArrayFilter = (key: ArrayFilterKey, data: string) => {
+  const currentFilter = localFilters.value[key];
+
+  if (!currentFilter) {
+    localFilters.value = {
       ...localFilters.value,
-      type: [...localFilters.value.type.filter((item) => item !== value)],
-    });
+      [key]: [data],
+    };
+    return;
   }
-  if (localFilters.value.type) {
-    return (localFilters.value = {
+
+  if (Array.isArray(currentFilter)) {
+    if (checkIncludes(currentFilter as string[], data)) {
+      localFilters.value = {
+        ...localFilters.value,
+        [key]: currentFilter.filter((item) => item !== data),
+      };
+      return;
+    }
+
+    localFilters.value = {
       ...localFilters.value,
-      type: [...localFilters.value.type, value],
-    });
+      [key]: [...currentFilter, data],
+    };
+    return;
   }
+
   localFilters.value = {
     ...localFilters.value,
-    type: [value],
+    [key]: [data],
   };
 };
 
@@ -161,10 +151,10 @@ const updatePrice = (key: "min" | "max", event: InputEvent) => {
   };
 };
 
-// const updateBrand = (event: InputEvent) => {
-//   const value = parseFloat((event.target as HTMLInputElement).value);
-//   localFilters.value.brand = String(value);
-// };
+const updateBrand = (event: InputEvent) => {
+  const value = parseFloat((event.target as HTMLInputElement).value);
+  localFilters.value.brand = String(value);
+};
 
 const applyFilters = () => {
   emit("filters-changed", localFilters.value);

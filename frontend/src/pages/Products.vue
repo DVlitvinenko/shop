@@ -1,13 +1,13 @@
 <template>
   <Button
     @click="filtersShow"
-    class="fixed z-20 mb-2 shadow-md max-w-fit top-24 sm:right-8 right-2"
+    class="fixed z-10 mb-2 shadow-md max-w-fit sm:top-24 top-16 sm:right-8 right-2"
   >
     {{ productStore.allCountProducts }}
     <font-awesome-icon :icon="['fas', 'filter']" />
   </Button>
-  <div class="flex space-x-2">
-    <div class="">
+  <div class="flex w-full space-x-2">
+    <div class="w-full">
       <ProductList :products="products" />
       <div class="-mt-[550px]" v-intersection="getMoreProducts"></div>
     </div>
@@ -16,7 +16,7 @@
     <Filters
       @filters-changed="applyFilters"
       @close="filtersShow"
-      :filters="filters"
+      :filters="productStore.filters"
     />
   </Dialog>
 </template>
@@ -35,8 +35,6 @@ const isShowed = ref(false);
 
 const productStore = useProductStore();
 
-const filters = productStore.filters;
-
 const products = computed(() => productStore.products ?? []);
 
 const filtersShow = () => {
@@ -45,7 +43,7 @@ const filtersShow = () => {
 
 onMounted(async () => {
   if (!productStore.products) {
-    const data = await getProducts(filters);
+    const data = await getProducts(productStore.filters);
 
     productStore.setProducts(data.products);
     productStore.setAllProductsCount(data.total_count);
@@ -55,10 +53,10 @@ onMounted(async () => {
 const getMoreProducts = async () => {
   if (productStore.products) {
     productStore.updateFilters({
-      offset: filters.offset ? filters.offset + 1 : 1,
+      offset: productStore.filters.offset ? productStore.filters.offset + 1 : 1,
     });
 
-    const data = await getProducts(filters);
+    const data = await getProducts(productStore.filters);
 
     productStore.addProducts(data.products);
     productStore.setAllProductsCount(data.total_count);
@@ -67,6 +65,7 @@ const getMoreProducts = async () => {
 
 const applyFilters = async (filters: FiltersType) => {
   productStore.updateFilters({ ...filters, offset: 1 });
+
   const data = await getProducts(filters);
 
   productStore.setProducts(data.products);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -13,12 +14,48 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
+    public function getProduct(Product $product)
+    {
+        $productItem = Product::query()
+            ->selectRaw(
+                'products.*,
+            COALESCE(AVG(reviews.rating), 0) as average_rating,
+            COUNT(reviews.id) as reviews_count'
+            )
+            ->leftJoin('reviews', 'reviews.product_id', '=', 'products.id')
+            ->where('products.id', $product->id)
+            ->groupBy('products.id')
+            ->with([
+                'reviews' => function ($query) {
+                    $query->select('reviews.*')
+                        ->with('user:id,name');
+                }
+            ])
+            ->first();
+
+        $reviews = $productItem->reviews;
+        unset($productItem->reviews);
+
+        if (!$productItem) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+
+        return response()->json([
+            'product' => $productItem,
+            'reviews' => $reviews,
+        ]);
+    }
+
+
+
     public function getProductByFilters(Request $request)
     {
         $price = $request->input('price', []);
         $text = $request->input('text');
         $classes = $request->input('class', []);
         $types = $request->input('type', []);
+        $colors = $request->input('color', []);
         $brand = $request->input('brand');
         $count = $request->input('count', []);
         $model = $request->input('model');
@@ -26,7 +63,6 @@ class ProductController extends Controller
         $limit = $request->input('limit', 6);
         $offset = $request->input('offset', 0);
 
-        // Базовый запрос для получения продуктов
         $baseQuery = Product::query()
             ->selectRaw(
                 'products.*,
@@ -54,6 +90,10 @@ class ProductController extends Controller
 
         if (!empty($classes)) {
             $baseQuery->whereIn('class', $classes);
+        }
+
+        if (!empty($colors)) {
+            $baseQuery->whereIn('color', $colors);
         }
 
         if (!empty($types)) {
@@ -102,6 +142,10 @@ class ProductController extends Controller
             $totalCountQuery->whereIn('type', $types);
         }
 
+        if (!empty($colors)) {
+            $totalCountQuery->whereIn('color', $colors);
+        }
+
         if (!empty($brand)) {
             $totalCountQuery->where('brand', $brand);
         }
@@ -120,7 +164,6 @@ class ProductController extends Controller
 
         $totalCount = $totalCountQuery->count();
 
-        // Сортировка
         $sortOptions = [
             'price-asc' => ['price', 'asc'],
             'price-desc' => ['price', 'desc'],
@@ -135,7 +178,7 @@ class ProductController extends Controller
         $baseQuery->orderBy($sortField[0], $sortField[1]);
 
         // Пагинация
-        $products = $baseQuery->skip($offset)
+        $products = $baseQuery->skip($offset * $limit)
             ->take($limit)
             ->get();
 
