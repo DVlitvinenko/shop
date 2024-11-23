@@ -15,6 +15,8 @@ Route::post('login', [AuthorizationController::class, 'login']);
 
 
 Route::post('products', [ProductController::class, 'getProductByFilters']);
+Route::post('products/reviews', [ReviewController::class, 'getReviews']);
+Route::get('products/reviews/{review}', [ReviewController::class, 'getReview']);
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('products/create', [ProductController::class, 'store']);
@@ -24,12 +26,12 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
 Route::get('products/{product}', [ProductController::class, 'getProduct']);
 
-Route::apiResource('reviews', ReviewController::class);
-Route::apiResource('orders', OrderController::class);
-Route::apiResource('news', NewsController::class);
-Route::apiResource('cart', CartController::class);
-
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/cart', [CartController::class, 'getCartFromUser']);
+    Route::post('/cart/remove', [CartController::class, 'removeFromCart']);
+    Route::post('/cart/increment/{product}', [CartController::class, 'incrementCartItem']);
+    Route::post('/cart/decrement/{product}', [CartController::class, 'decrementCartItem']);
+    Route::post('/products/cart/{product}', [CartController::class, 'addToCart']);
     Route::get('user', [UserController::class, 'getUser']);
     Route::post('logout', [AuthorizationController::class, 'logout']);
 });

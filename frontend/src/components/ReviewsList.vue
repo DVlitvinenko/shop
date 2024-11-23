@@ -2,27 +2,28 @@
   <TransitionGroup
     name="review"
     tag="div"
-    class="flex flex-wrap items-center justify-between px-2 pb-2 sm:pb-10"
+    class="flex flex-wrap items-center justify-between px-2 pb-2"
   >
-    <Review
-      v-for="(item, i) in reviews"
-      :item="item"
-      @go-review="goReview"
+    <div
+      v-if="infoStore.reviews"
+      class="w-1/2 p-2"
+      @click="goReview(item.id)"
       :key="`review_${i}`"
-    />
+      v-for="(item, i) in infoStore.reviews"
+    >
+      <ReviewItem :review="item" :slice="150" clicked />
+    </div>
   </TransitionGroup>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import Review from "./Review.vue";
 import { useInfoStore } from "@store/useInfoStore";
+import ReviewItem from "@components/ReviewItem.vue";
 
 const router = useRouter();
 
 const infoStore = useInfoStore();
-
-const reviews = infoStore.reviews;
 
 const goReview = (id: number) => {
   router.push({ path: `/review/${id}` });

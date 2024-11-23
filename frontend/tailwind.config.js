@@ -52,10 +52,10 @@ export default {
       },
       width: { desc: "1320px" },
       screens: {
-        sm: "640px",
-        md: "768px",
-        lg: "1024px",
-        xl: "1280px",
+        sm: "768px",
+        md: "1080px",
+        lg: "1324px",
+        xl: "1480px",
         "2xl": "1536px",
       },
       borderRadius: {

@@ -41,10 +41,15 @@ const getDataArray = <T extends object>(obj: T) => {
   }));
 };
 
+const calculateRating = (value: number | undefined) => {
+  return value && Math.floor(value * 10) / 10;
+};
+
 export {
   cutText,
   getWordForNumber,
   translateToRussian,
   translateToEnglish,
   getDataArray,
+  calculateRating,
 };

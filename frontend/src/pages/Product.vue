@@ -1,11 +1,8 @@
 <template>
-  <div
-    v-if="product"
-    class="flex max-w-[1360px] flex-col w-full gap-2 p-2 sm:px-10 sm:flex-row"
-  >
+  <div v-if="product" class="max-w-[1360px] w-full gap-2 p-2 sm:px-10">
     <div class="flex w-full p-2">
       <div
-        class="relative flex w-full gap-6 overflow-hidden transition-shadow duration-300 bg-white shadow-md rounded-3xl"
+        class="relative flex flex-col w-full gap-6 overflow-hidden transition-shadow duration-300 bg-white shadow-md sm:flex-row rounded-3xl"
       >
         <img
           :src="product.image ?? 'placeholder.jpg'"
@@ -18,7 +15,7 @@
         >
           <Star class="my-2" :max="5" :rating="rating ?? 0" />
         </div>
-        <div class="flex flex-col justify-start h-full gap-4 p-2">
+        <div class="flex flex-col justify-start w-full h-full gap-4 p-2">
           <div class="flex items-center justify-between">
             <h3 class="px-1 text-lg font-semibold text-gray-800 truncate">
               {{ product.title }}
@@ -42,7 +39,7 @@
           </p>
           <div class="pt-1 mt-auto ml-auto max-w-56">
             <Button
-              v-if="!checkInCart"
+              v-if="!inCart"
               variant="primary"
               class="w-full"
               @click.stop="addToCart"
@@ -53,12 +50,17 @@
               v-else
               variant="danger"
               class="w-full"
-              @click.stop="dellAboutCart"
+              @click.stop="removeFromCart"
             >
               Удалить из корзины
             </Button>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="flex flex-wrap">
+      <div class="w-full p-2 sm:w-1/2" v-for="review in infoStore.reviews">
+        <ReviewItem :review="review" />
       </div>
     </div>
   </div>
@@ -68,63 +70,52 @@
 <script setup lang="ts">
 import Button from "@components//UI/Button.vue";
 import { useProductStore } from "@store/useProductStore";
-import { Product } from "@typesDir/types";
+import { Product, Review } from "@typesDir/types";
 import NotFound from "./NotFound.vue";
-import { translateToRussian } from "@utils/utils";
+import { calculateRating, translateToRussian } from "@utils/utils";
 import { ClothingColors } from "@constants/ClosingColor";
 import { ClothingTypes } from "@constants/ClothingType";
 import { ClothingClasses } from "@constants/ClothingClass";
 import client from "@client/client";
 import { computed, onMounted, ref } from "vue";
 import Star from "@components/UI/Star.vue";
+import { useInfoStore } from "@store/useInfoStore";
+import ReviewItem from "../components/ReviewItem.vue";
 
 interface CardProps {
   id: number;
 }
 
 const product = ref<Product>();
+const reviews = ref<Review[]>();
 
 const props = defineProps<CardProps>();
 
 const productStore = useProductStore();
-
-const findProduct = async (): Promise<Product | undefined> => {
-  const main = productStore.products?.find((item) => item.id === props.id);
-  if (main) {
-    return main;
-  }
-  const promo = productStore.promoProducts?.find(
-    (item) => item.id === props.id
-  );
-  if (promo) {
-    return promo;
-  }
-
-  const data = await client.getProduct(props.id);
-  return data.product;
-};
+const infoStore = useInfoStore();
 
 onMounted(async () => {
-  product.value = await findProduct();
+  const data = await client.getProduct(props.id);
+  product.value = data.product;
+  reviews.value = data.reviews;
 });
 
-const addToCart = () => {
-  product.value && productStore.addToCart(product.value);
+const addToCart = async () => {
+  product.value && (await productStore.addToCart(product.value));
 };
 
-const dellAboutCart = () => {
-  product.value && productStore.dellAboutCart(product.value.id);
+const removeFromCart = () => {
+  product.value && productStore.removeFromCart(product.value.id);
 };
 
-const checkInCart = (product: Product) => {
-  const cartItem = productStore.cart.find((item) => item.id === product.id);
-  return !!cartItem;
-};
+const inCart = computed(
+  () => !!productStore.cart.find((item) => item.id === props.id)
+);
 
 const rating = computed(
   () =>
     product.value?.average_rating &&
-    Math.floor(product.value?.average_rating * 10) / 10
+    calculateRating(product.value.average_rating)
 );
 
 const productProperties = computed(() => {

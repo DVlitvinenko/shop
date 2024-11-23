@@ -3,7 +3,7 @@
     <div
       v-show="props.isShowed"
       @click.self="handleClick"
-      class="fixed top-0 left-0 z-10 flex items-center justify-center w-screen h-screen mt-0 bg-black bg-opacity-20"
+      class="fixed top-0 left-0 z-30 flex items-center justify-center w-screen h-screen mt-0 bg-black bg-opacity-20"
     >
       <div
         @scroll.self

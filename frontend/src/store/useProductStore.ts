@@ -1,5 +1,6 @@
+import client from "@client/client";
 import { useCheckUser } from "@hooks/useCheckUser";
-import { FiltersType, Product } from "@typesDir/types";
+import { CartItem, FiltersType, Product } from "@typesDir/types";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -20,16 +21,22 @@ export const useProductStore = defineStore("products", () => {
 
   const promoProducts = ref<Product[]>();
 
-  const cart = ref<Product[]>([]);
+  const cart = ref<CartItem[]>();
 
-  const addToCart = (product: Product) => {
-    checkUser(
-      () =>
-        (cart.value = [
-          ...cart.value.filter((item) => item.id !== product.id),
-          { ...product, count: 1 },
-        ])
-    );
+  const addToCart = async (product: Product) => {
+    await checkUser(async () => {
+      try {
+        await client.addToCart(product.id);
+        if (cart.value) {
+          cart.value = [
+            ...cart.value.filter((item) => item.id !== product.id),
+            { ...product, quantity: 1 },
+          ];
+        } else {
+          cart.value = [{ ...product, quantity: 1 }];
+        }
+      } catch (error) {}
+    });
   };
 
   const setPromoProducts = (products: Product[]) => {
@@ -50,12 +57,38 @@ export const useProductStore = defineStore("products", () => {
     allCountProducts.value = value;
   };
 
-  const dellAboutCart = (id: number) => {
-    cart.value = [...cart.value.filter((item) => item.id !== id)];
+  const removeFromCart = async (id: number) => {
+    try {
+      await client.removeFromCart([id]);
+      cart.value &&
+        (cart.value = [...cart.value.filter((item) => item.id !== id)]);
+    } catch (error) {}
+  };
+
+  const clearCart = () => {
+    cart.value = [];
+  };
+
+  const setCart = (cartData: CartItem[]) => {
+    cart.value = [...cartData];
   };
 
   const updateFilters = (filtersData: FiltersType) => {
     filters.value = { ...filters.value, ...filtersData };
+  };
+
+  const getPromoProducts = async () => {
+    const data = await client.getProducts({
+      count: { min: 1 },
+      sort: "rating-desc",
+      limit: 8,
+    });
+    setPromoProducts(data.products);
+  };
+
+  const getCart = async () => {
+    const data = await client.getCart();
+    setCart(data.cart);
   };
 
   return {
@@ -65,11 +98,15 @@ export const useProductStore = defineStore("products", () => {
     allCountProducts,
     filters,
     addToCart,
-    dellAboutCart,
+    removeFromCart,
     setPromoProducts,
     setProducts,
     setAllProductsCount,
     addProducts,
     updateFilters,
+    clearCart,
+    setCart,
+    getPromoProducts,
+    getCart,
   };
 });

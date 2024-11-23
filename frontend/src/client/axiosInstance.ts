@@ -20,10 +20,6 @@ axiosInstance.interceptors.response.use(
       ] = `Bearer ${response.data.token}`;
     }
 
-    if (!response.data.token) {
-      delete axiosInstance.defaults.headers.common["Authorization"];
-    }
-
     return response;
   },
   (error) => {

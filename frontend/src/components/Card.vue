@@ -1,7 +1,7 @@
 <template>
   <div class="flex w-full p-2 sm:w-1/2 md:w-1/3 lg:w-1/4" @click="goProduct">
     <div
-      class="relative flex flex-col overflow-hidden transition-shadow duration-300 bg-white shadow-md cursor-pointer rounded-3xl hover:shadow-lg"
+      class="relative flex flex-col w-full overflow-hidden transition-shadow duration-300 bg-white shadow-md cursor-pointer rounded-3xl hover:shadow-lg"
     >
       <img
         :src="props.product.image ?? 'placeholder.jpg'"
@@ -9,7 +9,7 @@
         class="object-cover object-center w-full bg-gray-200 min-h-64"
       />
       <div
-        v-if="props.product.average_rating"
+        v-if="props.product.average_rating && rating"
         class="absolute top-0 flex items-center gap-1 text-yellow-500 right-1"
       >
         <Star class="my-2" :max="5" :rating="rating" />
@@ -41,7 +41,7 @@
             v-if="!inCart"
             variant="primary"
             class="w-full"
-            @click.stop="addToCart"
+            @async-click.stop="addToCart"
           >
             В корзину
           </Button>
@@ -49,7 +49,7 @@
             v-else
             variant="danger"
             class="w-full"
-            @click.stop="dellAboutCart"
+            @async-click.stop="removeFromCart"
           >
             Удалить из корзины
           </Button>
@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { Product } from "@typesDir/types";
 import Button from "./UI/Button.vue";
-import { translateToRussian } from "@utils/utils";
+import { calculateRating, translateToRussian } from "@utils/utils";
 import { ClothingClasses } from "@constants/ClothingClass";
 import { ClothingTypes } from "@constants/ClothingType";
 import { ClothingColors } from "@constants/ClosingColor";
@@ -75,9 +75,7 @@ interface CardProps {
 
 const props = defineProps<CardProps>();
 
-const rating =
-  props.product.average_rating &&
-  Math.floor(props.product.average_rating * 10) / 10;
+const rating = calculateRating(props.product.average_rating);
 
 const description =
   props.product.description.length > 150
@@ -98,7 +96,7 @@ const addToCart = () => {
   emit("add-to-cart", props.product);
 };
 
-const dellAboutCart = () => {
+const removeFromCart = () => {
   emit("dell-about-cart", props.product.id);
 };
 

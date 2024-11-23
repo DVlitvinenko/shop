@@ -20,6 +20,9 @@ interface Product {
   updated_at: string; // Last update date in ISO format
   average_rating: number;
 }
+interface CartItem extends Product {
+  quantity: number;
+}
 interface Review {
   id: number;
   product_id: number;
@@ -122,4 +125,5 @@ export type {
   Sort,
   TranslationMap,
   Review,
+  CartItem,
 };

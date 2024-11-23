@@ -51,27 +51,13 @@ import NewsList from "@components/NewsList.vue";
 import ProductList from "@components/ProductList.vue";
 import Promo from "@components/Promo.vue";
 import ReviewsList from "@components/ReviewsList.vue";
+import { useInfoStore } from "@store/useInfoStore";
 import { useProductStore } from "@store/useProductStore";
 import { computed, onMounted } from "vue";
 
 const productStore = useProductStore();
 
 const promoProducts = computed(() => productStore.promoProducts ?? []);
-
-const getPromoProducts = async () => {
-  const data = await client.getProducts({
-    count: { min: 1 },
-    sort: "rating-desc",
-    limit: 6,
-  });
-  productStore.setPromoProducts(data.products);
-};
-
-onMounted(() => {
-  if (!productStore.promoProducts) {
-    getPromoProducts();
-  }
-});
 </script>
 
 <style scoped></style>

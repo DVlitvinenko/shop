@@ -43,7 +43,7 @@ class ProductController extends Controller
 
         return response()->json([
             'product' => $productItem,
-            'reviews' => $reviews,
+            'reviews' => $productItem->reviews,
         ]);
     }
 

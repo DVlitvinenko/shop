@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="fixed top-0 left-0 z-10 flex items-center justify-between w-screen p-1 px-2 space-x-4 text-base font-semibold sm:py-2 sm:text-xl sm:px-10 text-text"
+    class="fixed top-0 left-0 z-20 flex items-center justify-between w-screen p-1 px-2 space-x-4 text-base font-semibold sm:py-2 sm:text-xl sm:px-10 text-text"
   >
     <div
       class="bg-background-header bg-opacity-80 mx-auto flex items-center p-2 justify-between rounded-button w-full max-w-[1360px] shadow-background-header shadow-md"
@@ -14,7 +14,7 @@
       <div class="flex items-center justify-between gap-2">
         <div
           @click="toggleMenu"
-          class="fixed z-10 p-2 rounded-md top-2 right-5 sm:hidden focus:outline-none"
+          class="fixed z-10 p-2 rounded-md top-3 right-4 sm:hidden focus:outline-none"
         >
           <svg
             class="w-6 h-6"
@@ -32,28 +32,42 @@
           </svg>
         </div>
         <div class="items-center justify-between hidden gap-2 sm:flex">
-          <router-link class="p-2 rounded-md" to="/">Главная</router-link>
-          <router-link class="p-2 rounded-md" to="/products"
+          <div class="md:w-36"></div>
+          <router-link class="w-24 p-2 text-center rounded-md" to="/"
+            >Главная</router-link
+          >
+          <router-link class="w-24 p-2 text-center rounded-md" to="/products"
             >Каталог
           </router-link>
-          <router-link class="p-2 rounded-md" v-if="isLogin" to="/cart"
-            >Корзина{{
-              productStore.cart.length ? ` (${productStore.cart.length})` : ""
-            }}
-          </router-link>
-          <router-link class="p-2 rounded-md" v-if="isLogin" to="/cabinet"
+          <router-link
+            class="w-24 p-2 text-center rounded-md"
+            v-if="isLogin"
+            to="/cabinet"
             >Кабинет
           </router-link>
-          <router-link class="p-2 rounded-md" v-if="isAdmin" to="/admin"
+          <router-link
+            class="w-24 p-2 text-center rounded-md"
+            v-if="isAdmin"
+            to="/admin"
             >Админ
           </router-link>
         </div>
       </div>
-      <div class="hidden sm:block" v-if="!isLogin">
-        <Button variant="primary" @click="login">Вход</Button>
-      </div>
-      <div class="hidden sm:block" v-if="isLogin" @click="logout">
-        <Button variant="primary">Выход</Button>
+      <div class="flex justify-end w-full space-x-4 sm:w-fit sm:pr-0 pr-14">
+        <router-link
+          class="flex items-center justify-center p-2 w-36 rounded-3xl"
+          v-if="isLogin"
+          to="/cart"
+          >Корзина{{
+            productStore.cart?.length ? ` (${productStore.cart.length})` : ""
+          }}
+        </router-link>
+        <div class="hidden sm:block" v-if="!isLogin">
+          <Button variant="primary" @click="login">Вход</Button>
+        </div>
+        <div class="hidden sm:block" v-if="isLogin" @click="logout">
+          <Button variant="primary">Выход</Button>
+        </div>
       </div>
     </div>
     <Transition class="" name="slide-fade">

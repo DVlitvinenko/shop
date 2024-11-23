@@ -6,7 +6,7 @@
   >
     <Card
       :in-cart="checkInCart(product)"
-      @dell-about-cart="dellAboutCart"
+      @dell-about-cart="removeFromCart"
       @add-to-cart="addToCart"
       @go-product="goProduct"
       v-for="product in props.products"
@@ -32,16 +32,16 @@ const goProduct = (id: number) => {
   router.push({ path: `/product/${id}` });
 };
 
-const addToCart = (product: Product) => {
-  productStore.addToCart(product);
+const addToCart = async (product: Product) => {
+  await productStore.addToCart(product);
 };
 
-const dellAboutCart = (id: number) => {
-  productStore.dellAboutCart(id);
+const removeFromCart = (id: number) => {
+  productStore.removeFromCart(id);
 };
 
 const checkInCart = (product: Product) => {
-  const cartItem = productStore.cart.find((item) => item.id === product.id);
+  const cartItem = productStore.cart?.find((item) => item.id === product.id);
   return !!cartItem;
 };
 </script>
