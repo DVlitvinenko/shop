@@ -72,7 +72,7 @@ import Button from "@components//UI/Button.vue";
 import { useProductStore } from "@store/useProductStore";
 import { Product, Review } from "@typesDir/types";
 import NotFound from "./NotFound.vue";
-import { calculateRating, translateToRussian } from "@utils/utils";
+import { cutNumber, translateToRussian } from "@utils/utils";
 import { ClothingColors } from "@constants/ClosingColor";
 import { ClothingTypes } from "@constants/ClothingType";
 import { ClothingClasses } from "@constants/ClothingClass";
@@ -113,9 +113,7 @@ const inCart = computed(
 );
 
 const rating = computed(
-  () =>
-    product.value?.average_rating &&
-    calculateRating(product.value.average_rating)
+  () => product.value?.average_rating && cutNumber(product.value.average_rating)
 );
 
 const productProperties = computed(() => {

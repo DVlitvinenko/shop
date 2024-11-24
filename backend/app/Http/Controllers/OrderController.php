@@ -2,53 +2,85 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
+use App\Models\Cart;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function order(Request $request)
     {
-        $orders = Order::all();
-        return response()->json($orders);
+        $ids = $request->input('ids');
+
+        $user = Auth::user();
+
+        $cartItems = Cart::where('user_id', $user->id)->whereIn('product_id', $ids)->get();
+
+        if ($cartItems->isEmpty()) {
+            return response()->json(['error' => 'Cart is empty'], 400);
+        }
+
+        $createdOrders = [];
+
+        foreach ($cartItems as $cartItem) {
+            $product = $cartItem->product;
+
+            if ($product->count <= 0) {
+                return response()->json(['error' => 'Product ' . $product->name . ' is out of stock'], 409);
+            }
+
+            $order = Order::create([
+                'product_id' => $product->id,
+                'user_id' => $user->id,
+                'count' => $cartItem->count,
+                'date' => now(),
+                'status' => OrderStatus::PENDING,
+                'price' => $product->price * $cartItem->count,
+            ]);
+
+            $createdOrders[] = $order;
+
+            $product->count -= $cartItem->count;
+            $product->save();
+        }
+
+        Cart::where('user_id', $user->id)->delete();
+
+        return response()->json($createdOrders, 201);
     }
 
-    public function store(Request $request)
-    {
-        $order = Order::create($request->validate([
-            'product_id' => 'required|exists:products,id',
-            'user_id' => 'required|exists:users,id',
-            'count' => 'required|integer|min:1',
-            'date' => 'required|date',
-            'status' => 'required|string|max:255',
-            'price' => 'required|numeric',
-        ]));
 
-        return response()->json($order, 201);
-    }
-
-    public function show(Order $order)
+    public function markAsPaid(Order $order)
     {
+        $order->status = OrderStatus::PAID;
+        $order->save();
+
         return response()->json($order);
     }
 
-    public function update(Request $request, Order $order)
+    public function shipOrder(Order $order)
     {
-        $order->update($request->validate([
-            'product_id' => 'exists:products,id',
-            'user_id' => 'exists:users,id',
-            'count' => 'integer|min:1',
-            'date' => 'date',
-            'status' => 'string|max:255',
-            'price' => 'numeric',
-        ]));
+        $order->status = OrderStatus::SHIPPED;
+        $order->save();
 
         return response()->json($order);
     }
 
-    public function destroy(Order $order)
+    public function deliverOrder(Order $order)
     {
-        $order->delete();
-        return response()->json(['message' => 'Order deleted']);
+        $order->status = OrderStatus::DELIVERED;
+        $order->save();
+
+        return response()->json($order);
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        $order->status = OrderStatus::CANCELED;
+        $order->save();
+
+        return response()->json($order);
     }
 }

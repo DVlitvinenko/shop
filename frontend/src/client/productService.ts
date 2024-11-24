@@ -89,7 +89,7 @@ const removeFromCart = async (ids: number[]) => {
 
 const order = async (ids: number[]) => {
   try {
-    await axiosInstance.post(`/products/cart/order`, { ids: ids });
+    await axiosInstance.post(`/order`, { ids: ids });
   } catch (error) {
     console.error("Error fetching products:", error);
     throw new Error("Failed to fetch products");
@@ -99,6 +99,26 @@ const order = async (ids: number[]) => {
 const getCart = async (): Promise<{ cart: CartItem[] }> => {
   try {
     const response = await axiosInstance.get(`/cart`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw new Error("Failed to fetch products");
+  }
+};
+
+const getInitialData = async (): Promise<{
+  cart: CartItem[];
+  reviews: Review[];
+  products: Product[];
+}> => {
+  try {
+    const response = await axiosInstance.post(`/initial`, {
+      product: { count: { min: 1 }, sort: "rating-desc", limit: 8 },
+      review: {
+        limit: 4,
+        sort: "desc",
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -117,4 +137,5 @@ export {
   getCart,
   incrementQuantityInCart,
   decrementQuantityInCart,
+  getInitialData,
 };

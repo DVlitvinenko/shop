@@ -110,9 +110,13 @@ class CartController extends Controller
         return response()->json($cartItem, 201);
     }
 
-    public function getCartFromUser(Request $request)
+    public function getCartFromUser()
     {
         $user = Auth::user();
+
+        if (!$user) {
+            $user = auth('sanctum')->user();
+        }
 
         $cart = Cart::where('user_id', $user->id)->with('product')->get();
 
@@ -130,6 +134,7 @@ class CartController extends Controller
 
         return response()->json(['cart' => $result], 200);
     }
+
     public function show(Cart $cart)
     {
         return response()->json($cart);

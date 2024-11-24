@@ -1,8 +1,8 @@
 <template>
-  <div class="container p-6 mx-auto">
+  <div class="container p-6 mx-auto" v-if="userStore.user">
     <div class="p-6 mb-6 bg-white shadow-md rounded-3xl">
       <p class="text-3xl text-gray-700">
-        <span class="font-medium">{{ user.name }}</span>
+        <span class="font-medium">{{ userStore.user.name }}</span>
       </p>
       <div class="mt-4 w-60">
         <Button @click="handleEdit" variant="primary"> Сменить пароль </Button>
@@ -42,11 +42,11 @@
     <div class="p-6 bg-white shadow-md rounded-3xl">
       <h2 class="mb-4 text-2xl font-semibold">История покупок</h2>
       <ul>
-        <li v-if="user.story.length === 0" class="text-gray-500">
+        <!-- <li v-if="userStore.user.story.length === 0" class="text-gray-500">
           Нет истории покупок
-        </li>
-        <li
-          v-for="item in user.story"
+        </li> -->
+        <!-- <li
+          v-for="item in userStore.user.story"
           :key="item.id"
           class="py-4 border-b border-gray-200"
         >
@@ -65,7 +65,7 @@
               <p class="ml-4 text-lg font-bold">{{ item.price.toFixed(2) }}р</p>
             </div>
           </div>
-        </li>
+        </li> -->
       </ul>
     </div>
   </div>
@@ -78,7 +78,6 @@ import Input from "@components/UI/Input.vue";
 import { useUserStore } from "@store/useUserStore";
 import { ref, watch } from "vue";
 const userStore = useUserStore();
-const user = userStore.user;
 
 const isEdit = ref(false);
 const isDelete = ref(false);

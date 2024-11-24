@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Mockery\Undefined;
 
 class ProductController extends Controller
 {
@@ -188,7 +190,33 @@ class ProductController extends Controller
         ]);
     }
 
+    public function getInitialData(Request $request)
+    {
+        $user = null;
+        if (auth('sanctum')->check()) {
+            $user = auth('sanctum')->user();
+        }
 
+        $productFilters = $request->input('product', []);
+        $productsResponse = $this->getProductByFilters(new Request($productFilters));
+        $products = $productsResponse->getData(true);
+
+        if ($user) {
+            $cartResponse = app(CartController::class)->getCartFromUser($request);
+            $cart = $cartResponse->getData(true);
+        }
+
+        $reviewFilters = $request->input('review', []);
+        $reviewsResponse = app(ReviewController::class)->getReviews(new Request($reviewFilters));
+        $reviews = $reviewsResponse->getData(true);
+
+        return response()->json([
+            'products' => $products['products'] ?? [],
+            'total_count' => $products['total_count'] ?? 0,
+            'cart' => $cart['cart'] ?? [],
+            'reviews' => $reviews['reviews'] ?? []
+        ], 200);
+    }
 
 
 

@@ -41,8 +41,9 @@ const getDataArray = <T extends object>(obj: T) => {
   }));
 };
 
-const calculateRating = (value: number | undefined) => {
-  return value && Math.floor(value * 10) / 10;
+const cutNumber = (number: number, catTo: number): number => {
+  const factor = Math.pow(10, catTo);
+  return Math.floor(number * factor) / factor;
 };
 
 export {
@@ -51,5 +52,5 @@ export {
   translateToRussian,
   translateToEnglish,
   getDataArray,
-  calculateRating,
+  cutNumber,
 };

@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { Product } from "@typesDir/types";
 import Button from "./UI/Button.vue";
-import { calculateRating, translateToRussian } from "@utils/utils";
+import { cutNumber, translateToRussian } from "@utils/utils";
 import { ClothingClasses } from "@constants/ClothingClass";
 import { ClothingTypes } from "@constants/ClothingType";
 import { ClothingColors } from "@constants/ClosingColor";
@@ -75,7 +75,7 @@ interface CardProps {
 
 const props = defineProps<CardProps>();
 
-const rating = calculateRating(props.product.average_rating);
+const rating = cutNumber(props.product.average_rating, 1);
 
 const description =
   props.product.description.length > 150

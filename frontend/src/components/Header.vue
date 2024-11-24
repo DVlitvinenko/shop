@@ -32,7 +32,7 @@
           </svg>
         </div>
         <div class="items-center justify-between hidden gap-2 sm:flex">
-          <div class="md:w-36"></div>
+          <div v-if="isLogin" class="md:w-36"></div>
           <router-link class="w-24 p-2 text-center rounded-md" to="/"
             >Главная</router-link
           >

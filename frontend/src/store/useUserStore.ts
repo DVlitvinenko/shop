@@ -3,8 +3,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useUserStore = defineStore("user", () => {
-  const user = ref<any>();
-  // !исправить
+  const user = ref<User>();
   const checkUser = (): boolean => {
     return !!user.value;
   };

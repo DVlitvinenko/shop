@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import Star from "@components/UI/Star.vue";
 import { Review } from "@typesDir/types";
-import { calculateRating, cutText } from "@utils/utils";
+import { cutNumber, cutText } from "@utils/utils";
 import { onMounted, ref } from "vue";
 
 interface ReviewProps {
@@ -43,7 +43,7 @@ const rating = ref();
 const body = ref(props.review.body);
 
 onMounted(() => {
-  rating.value = calculateRating(props.review.rating);
+  rating.value = cutNumber(props.review.rating, 1);
   if (props.slice) {
     body.value = cutText(props.review.body, props.slice);
   }

@@ -21,7 +21,9 @@
               {{ item.title }}
             </h3>
             <p class="text-sm text-gray-500">{{ item.description }}</p>
-            <p class="text-sm text-gray-500">Цена: {{ item.price }} ₽</p>
+            <p class="text-sm text-gray-500">
+              Цена: {{ cutNumber(Number(item.price), 2) }}₽
+            </p>
             <p class="text-sm text-gray-500">
               Осталось на складе: {{ item.count }}
             </p>
@@ -59,10 +61,17 @@
       v-if="productStore.cart?.length"
       class="flex flex-col items-end w-full gap-4 p-4 shadow-md h-fit sm:place-items-center sm:w-1/5 bg-background-card rounded-3xl"
     >
-      <div class="text-lg font-bold">Итого: {{ totalPrice }} ₽</div>
-      <Button @async-click="placeOrder" class="text-nowrap">
-        Оформить заказ
-      </Button>
+      <div class="text-lg font-bold">
+        Итого: {{ cutNumber(Number(totalPrice), 2) }}₽
+      </div>
+      <Confirmation
+        cancel="Нет"
+        confirm="Да"
+        :title="`Оформить заказ на ${cutNumber(Number(totalPrice), 2)}₽`"
+        @confirm="placeOrder"
+      >
+        <Button class="text-nowrap"> Оформить заказ </Button>
+      </Confirmation>
     </div>
   </div>
 </template>
@@ -74,6 +83,8 @@ import { useRouter } from "vue-router";
 import { CartItem } from "@typesDir/types";
 import Button from "@components/UI/Button.vue";
 import client from "@client/client";
+import { cutNumber } from "@utils/utils";
+import Confirmation from "@components/UI/Confirmation.vue";
 
 const productStore = useProductStore();
 
@@ -109,7 +120,6 @@ const totalPrice = computed(() =>
 );
 
 const placeOrder = async () => {
-  alert(`Заказ оформлен на сумму ${totalPrice.value} ₽!`);
   await client.order(productStore.cart!.map((item) => item.id));
   productStore.clearCart();
 };

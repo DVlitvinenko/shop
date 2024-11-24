@@ -3,12 +3,15 @@ import { useCheckUser } from "@hooks/useCheckUser";
 import { CartItem, FiltersType, Product } from "@typesDir/types";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { useInfoStore } from "./useInfoStore";
 
 export const useProductStore = defineStore("products", () => {
   const checkUser = useCheckUser();
 
   const products = ref<Product[]>();
   const allCountProducts = ref(0);
+
+  const infoStore = useInfoStore();
 
   const defaultFilters: FiltersType = {
     count: { min: 1 },
@@ -91,6 +94,15 @@ export const useProductStore = defineStore("products", () => {
     setCart(data.cart);
   };
 
+  const getInitialData = async () => {
+    const data = await client.getInitialData();
+    setCart(data.cart);
+    setPromoProducts(data.products);
+    if (data.reviews?.length) {
+      infoStore.setReviews([...data.reviews]);
+    }
+  };
+
   return {
     products,
     cart,
@@ -108,5 +120,6 @@ export const useProductStore = defineStore("products", () => {
     setCart,
     getPromoProducts,
     getCart,
+    getInitialData,
   };
 });
