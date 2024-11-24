@@ -104,7 +104,10 @@ const productProperties = [
   {
     type: "class",
     value: props.product.class
-      ? `${translateToRussian(props.product.class, ClothingClasses)} одежда,`
+      ? `${translateToRussian(
+          String(props.product.class),
+          ClothingClasses
+        )} одежда,`
       : " одежда,",
     onClick: () => console.log("Класс кликнут"),
     text: "Класс",
@@ -112,7 +115,7 @@ const productProperties = [
   {
     type: "type",
     value: props.product.type
-      ? translateToRussian(props.product.type, ClothingTypes)
+      ? translateToRussian(String(props.product.type), ClothingTypes)
       : "",
     onClick: () => console.log("Тип кликнут"),
     text: "Тип",
@@ -132,7 +135,10 @@ const productProperties = [
   {
     type: "color",
     value: props.product.color
-      ? `Цвет: ${translateToRussian(props.product.color, ClothingColors)}`
+      ? `Цвет: ${translateToRussian(
+          String(props.product.color),
+          ClothingColors
+        )}`
       : "",
     onClick: () => console.log("Цвет кликнут"),
     text: "Цвет",

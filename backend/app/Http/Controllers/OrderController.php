@@ -36,7 +36,7 @@ class OrderController extends Controller
                 'user_id' => $user->id,
                 'count' => $cartItem->count,
                 'date' => now(),
-                'status' => OrderStatus::PENDING,
+                'status' => OrderStatus::PENDING->value,
                 'price' => $product->price * $cartItem->count,
             ]);
 
@@ -54,7 +54,7 @@ class OrderController extends Controller
 
     public function markAsPaid(Order $order)
     {
-        $order->status = OrderStatus::PAID;
+        $order->status = OrderStatus::PAID->value;
         $order->save();
 
         return response()->json($order);
@@ -62,7 +62,7 @@ class OrderController extends Controller
 
     public function shipOrder(Order $order)
     {
-        $order->status = OrderStatus::SHIPPED;
+        $order->status = OrderStatus::SHIPPED->value;
         $order->save();
 
         return response()->json($order);
@@ -70,7 +70,7 @@ class OrderController extends Controller
 
     public function deliverOrder(Order $order)
     {
-        $order->status = OrderStatus::DELIVERED;
+        $order->status = OrderStatus::DELIVERED->value;
         $order->save();
 
         return response()->json($order);
@@ -78,9 +78,35 @@ class OrderController extends Controller
 
     public function cancelOrder(Order $order)
     {
-        $order->status = OrderStatus::CANCELED;
+        $order->status = OrderStatus::CANCELED->value;
         $order->save();
 
         return response()->json($order);
+    }
+
+    public function getOrderFromUser(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            $user = auth('sanctum')->user();
+        }
+
+        $orders = Order::where('user_id', $user->id)
+            ->with('product')->orderBy('updated_at', 'desc')
+            ->get();
+
+        foreach ($orders as $order) {
+            $product = $order->product;
+
+            foreach ($product->getAttributes() as $key => $value) {
+                if ($key != "price" && $key != "count" && $key != "id") {
+                    $order->$key = $value;
+                }
+            }
+            unset($order->product, $order->user_id);
+        }
+
+        return response()->json(['orders' => $orders], 200);
     }
 }

@@ -1,3 +1,4 @@
+import { useErrorStore } from "@store/useErrorStore";
 import axios from "axios";
 
 const BASE_URL = "http://localhost:8000/api";
@@ -23,6 +24,8 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
+    const errorStore = useErrorStore();
+    errorStore.addError(error.response?.data?.message || "Неизвестная ошибка");
     return Promise.reject(error);
   }
 );

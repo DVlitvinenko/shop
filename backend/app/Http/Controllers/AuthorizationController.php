@@ -85,6 +85,7 @@ class AuthorizationController extends Controller
 
     public function logout(Request $request)
     {
+        $request->user()->currentAccessToken()->delete();
         Auth::guard('web')->logout();
 
         return response()->json(['message' => 'Logged out'], 200);

@@ -109,11 +109,12 @@ const removeFromCart = () => {
 };
 
 const inCart = computed(
-  () => !!productStore.cart.find((item) => item.id === props.id)
+  () => !!productStore.cart?.find((item) => item.id === props.id)
 );
 
 const rating = computed(
-  () => product.value?.average_rating && cutNumber(product.value.average_rating)
+  () =>
+    product.value?.average_rating && cutNumber(product.value.average_rating, 1)
 );
 
 const productProperties = computed(() => {
@@ -123,7 +124,7 @@ const productProperties = computed(() => {
         type: "class",
         value: product.value.class
           ? `${translateToRussian(
-              product.value.class,
+              String(product.value.class),
               ClothingClasses
             )} одежда,`
           : " одежда,",
@@ -133,7 +134,7 @@ const productProperties = computed(() => {
       {
         type: "type",
         value: product!.value.type
-          ? translateToRussian(product.value.type, ClothingTypes)
+          ? translateToRussian(String(product.value.type), ClothingTypes)
           : "",
         onClick: () => console.log("Тип кликнут"),
         text: "Тип",
@@ -153,7 +154,10 @@ const productProperties = computed(() => {
       {
         type: "color",
         value: product.value.color
-          ? `Цвет: ${translateToRussian(product!.value.color, ClothingColors)}`
+          ? `Цвет: ${translateToRussian(
+              String(product!.value.color),
+              ClothingColors
+            )}`
           : "",
         onClick: () => console.log("Цвет кликнут"),
         text: "Цвет",

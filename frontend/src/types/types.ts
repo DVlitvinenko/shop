@@ -1,4 +1,7 @@
+import { OrderStatus } from "@constants/OrderStatus";
 import { ClothingColors } from "../constants/ClosingColor";
+import { ClothingClasses } from "../constants/ClothingClass";
+import { ClothingTypes } from "../constants/ClothingType";
 interface DisplayRoute {
   name: string;
   path: string;
@@ -9,17 +12,24 @@ interface Product {
   price: string; // Price as a string (could be a number, but it's shown as a string in the JSON)
   title: string; // Title of the product
   description: string; // Description of the product
-  class: string; // Class/category of the product
-  type: string; // Type of product (e.g., Hoodie, Sweater, etc.)
+  class: typeof ClothingClasses; // Class/category of the product
+  type: typeof ClothingTypes; // Type of product (e.g., Hoodie, Sweater, etc.)
   count: number; // Available count of the product
   model: string; // Model identifier
   brand: string; // Brand name
   image: string | null; // Image URL or null if no image is available
-  color: string; // Color of the product
+  color: typeof ClothingColors; // Color of the product
   created_at: string; // Creation date in ISO format
   updated_at: string; // Last update date in ISO format
   average_rating: number;
 }
+
+interface Order extends Product {
+  id: number; // ID заказа
+  date: string; // Дата заказа
+  status: typeof OrderStatus; // Статус заказа (например, Pending, Completed)
+}
+
 interface CartItem extends Product {
   quantity: number;
 }
@@ -126,4 +136,5 @@ export type {
   TranslationMap,
   Review,
   CartItem,
+  Order,
 };

@@ -1,4 +1,4 @@
-import { CartItem, FiltersType, Product, Review } from "@typesDir/types";
+import { CartItem, FiltersType, Order, Product, Review } from "@typesDir/types";
 import { axiosInstance } from "./axiosInstance";
 
 const getProducts = async (
@@ -106,10 +106,21 @@ const getCart = async (): Promise<{ cart: CartItem[] }> => {
   }
 };
 
+const getOrders = async (): Promise<{ orders: Order[] }> => {
+  try {
+    const response = await axiosInstance.get(`/order`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw new Error("Failed to fetch products");
+  }
+};
+
 const getInitialData = async (): Promise<{
   cart: CartItem[];
   reviews: Review[];
   products: Product[];
+  orders: Order[];
 }> => {
   try {
     const response = await axiosInstance.post(`/initial`, {
@@ -126,6 +137,16 @@ const getInitialData = async (): Promise<{
   }
 };
 
+const cancelOrder = async (orderId: number): Promise<Order> => {
+  try {
+    const response = await axiosInstance.patch(`/order/${orderId}/cancel`);
+    return response.data;
+  } catch (error) {
+    console.error("Error canceling order:", error);
+    throw new Error("Failed to cancel order");
+  }
+};
+
 export {
   getProducts,
   getProduct,
@@ -138,4 +159,6 @@ export {
   incrementQuantityInCart,
   decrementQuantityInCart,
   getInitialData,
+  getOrders,
+  cancelOrder,
 };

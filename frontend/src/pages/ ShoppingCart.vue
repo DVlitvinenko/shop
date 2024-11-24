@@ -13,7 +13,7 @@
           <img
             :src="item.image || '/placeholder.jpg'"
             alt="Product Image"
-            class="object-cover w-20 h-20 bg-gray-200 rounded-md"
+            class="object-cover object-center w-20 h-auto bg-gray-200 rounded-md"
           />
 
           <div class="flex-1 ml-4">
@@ -121,11 +121,18 @@ const totalPrice = computed(() =>
 
 const placeOrder = async () => {
   await client.order(productStore.cart!.map((item) => item.id));
+  const orders = (await client.getOrders()).orders;
+  productStore.setOrders(orders);
   productStore.clearCart();
+  goCabinet();
 };
 
 const goProduct = (id: number) => {
   router.push(`product/${id}`);
+};
+
+const goCabinet = () => {
+  router.push(`cabinet/`);
 };
 </script>
 

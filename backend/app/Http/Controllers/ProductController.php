@@ -45,7 +45,7 @@ class ProductController extends Controller
 
         return response()->json([
             'product' => $productItem,
-            'reviews' => $productItem->reviews,
+            'reviews' => $reviews,
         ]);
     }
 
@@ -204,6 +204,9 @@ class ProductController extends Controller
         if ($user) {
             $cartResponse = app(CartController::class)->getCartFromUser($request);
             $cart = $cartResponse->getData(true);
+
+            $orderResponse = app(OrderController::class)->getOrderFromUser($request);
+            $orders = $orderResponse->getData(true);
         }
 
         $reviewFilters = $request->input('review', []);
@@ -214,7 +217,8 @@ class ProductController extends Controller
             'products' => $products['products'] ?? [],
             'total_count' => $products['total_count'] ?? 0,
             'cart' => $cart['cart'] ?? [],
-            'reviews' => $reviews['reviews'] ?? []
+            'reviews' => $reviews['reviews'] ?? [],
+            'orders' => $orders['orders'] ?? []
         ], 200);
     }
 

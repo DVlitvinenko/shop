@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
+use App\Models\Cart;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -38,20 +43,50 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    public function update(Request $request, User $user)
+    public function updatePassword(Request $request)
     {
-        $user->update($request->validate([
-            'name' => 'string|max:255',
-            'email' => 'email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8',
-        ]));
+        $validated = $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
 
-        return response()->json($user);
+        $user = User::where('id', Auth::user()->id)->first();
+
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json(['error' => 'Текущий пароль указан неверно'], 403);
+        }
+
+
+        $user->update([
+            'password' => Hash::make($validated['new_password']),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Пароль успешно обновлен'], 200);
     }
 
-    public function destroy(User $user)
+    public function destroy()
     {
-        $user->delete();
-        return response()->json(['message' => 'User deleted']);
+
+        $user = User::where('id', Auth::user()->id)->first();
+
+        $randomHash = Str::random(40);
+        $deactivatedEmail = 'deleted_' . $randomHash . '@deleted.deleted';
+        $deactivatedPassword = Hash::make($randomHash);
+
+        Order::whereNotIn('status', [OrderStatus::CANCELED->value, OrderStatus::DELIVERED->value, OrderStatus::REFUNDED->value, OrderStatus::RETURNED->value])
+            ->update(['status' => 'Canceled']);
+
+        Cart::where('user_id', $user->id)->delete();
+
+        $user->update([
+            'email' => $deactivatedEmail,
+            'password' => $deactivatedPassword,
+            'name' => 'deleted_' . $randomHash,
+        ]);
+
+        $user->tokens()->delete();
+        Auth::guard('web')->logout();
+
+        return response()->json(['message' => 'User account deactivated and data anonymized.']);
     }
 }

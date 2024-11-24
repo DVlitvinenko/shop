@@ -29,11 +29,15 @@ Route::get('products/{product}', [ProductController::class, 'getProduct']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/cart', [CartController::class, 'getCartFromUser']);
+    Route::get('/order', [OrderController::class, 'getOrderFromUser']);
+    Route::patch('/order/{order}/cancel', [OrderController::class, 'cancelOrder']);
     Route::post('/cart/remove', [CartController::class, 'removeFromCart']);
     Route::post('/order', [OrderController::class, 'order']);
     Route::post('/cart/increment/{product}', [CartController::class, 'incrementCartItem']);
     Route::post('/cart/decrement/{product}', [CartController::class, 'decrementCartItem']);
     Route::post('/products/cart/{product}', [CartController::class, 'addToCart']);
     Route::get('user', [UserController::class, 'getUser']);
+    Route::patch('user/password', [UserController::class, 'updatePassword']);
+    Route::delete('user', [UserController::class, 'destroy']);
     Route::post('logout', [AuthorizationController::class, 'logout']);
 });

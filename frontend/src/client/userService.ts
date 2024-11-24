@@ -77,4 +77,30 @@ const logout = async () => {
   }
 };
 
-export { login, register, logout, getUser };
+const changeUserPassword = async (
+  password: string,
+  newPassword: string,
+  newPasswordConfirmation: string
+) => {
+  try {
+    await axiosInstance.patch("/user/password", {
+      new_password: newPassword,
+      current_password: password,
+      new_password_confirmation: newPasswordConfirmation,
+    });
+  } catch (error: any) {
+    console.error("Logout failed:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+const deleteUser = async () => {
+  try {
+    await axiosInstance.delete("/user");
+  } catch (error: any) {
+    console.error("Logout failed:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+export { login, register, logout, getUser, changeUserPassword, deleteUser };

@@ -139,6 +139,8 @@ const goMain = () => {
 const logout = async () => {
   try {
     await client.logout();
+    userStore.unsetUser();
+    router.push("/");
   } catch (error) {
     console.log(error);
   }

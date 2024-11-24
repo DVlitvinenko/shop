@@ -1,6 +1,6 @@
 <template>
-  <div class="">
-    <div @click="handleShow">
+  <div class="cursor-default" @click.stop="">
+    <div @click.stop="handleShow">
       <slot />
     </div>
     <Dialog :is-showed="isShowed" @close="handleShow"
@@ -8,10 +8,13 @@
         <p class="w-full text-2xl font-bold text-center">{{ props.title }}</p>
 
         <div class="flex space-x-2">
-          <Button @click="handleShow" variant="danger" v-if="props.cancel">{{
-            props.cancel
-          }}</Button>
-          <Button @async-click="handleConfirm">{{ props.confirm }}</Button>
+          <Button
+            @click.stop="handleShow"
+            variant="danger"
+            v-if="props.cancel"
+            >{{ props.cancel }}</Button
+          >
+          <Button @async-click.stop="handleConfirm">{{ props.confirm }}</Button>
         </div>
       </div>
     </Dialog>

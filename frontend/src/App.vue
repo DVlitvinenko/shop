@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import ErrorList from "@components/ErrorList.vue";
 import Footer from "@components/FooterItem.vue";
+import GoUp from "@components/GoUp.vue";
 import Header from "@components/Header.vue";
 import Loading from "@components/UI/Loading.vue";
 import { useCheckAuth } from "@hooks/useCheckAuth";
@@ -28,6 +30,8 @@ onMounted(async () => {
 
     <router-view />
   </div>
+  <GoUp />
+  <ErrorList />
   <Footer v-if="$route.path !== '/products'" />
 </template>
 

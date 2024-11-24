@@ -1,18 +1,11 @@
 import client from "@client/client";
 import { useCheckUser } from "@hooks/useCheckUser";
-import { CartItem, FiltersType, Product } from "@typesDir/types";
+import { CartItem, FiltersType, Order, Product } from "@typesDir/types";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useInfoStore } from "./useInfoStore";
 
 export const useProductStore = defineStore("products", () => {
-  const checkUser = useCheckUser();
-
-  const products = ref<Product[]>();
-  const allCountProducts = ref(0);
-
-  const infoStore = useInfoStore();
-
   const defaultFilters: FiltersType = {
     count: { min: 1 },
     limit: 18,
@@ -20,11 +13,16 @@ export const useProductStore = defineStore("products", () => {
     sort: "rating-desc",
   };
 
+  const checkUser = useCheckUser();
+
+  const products = ref<Product[]>();
+  const allCountProducts = ref(0);
   const filters = ref<FiltersType>(defaultFilters);
-
   const promoProducts = ref<Product[]>();
-
   const cart = ref<CartItem[]>();
+  const orders = ref<Order[]>();
+
+  const infoStore = useInfoStore();
 
   const addToCart = async (product: Product) => {
     await checkUser(async () => {
@@ -94,13 +92,27 @@ export const useProductStore = defineStore("products", () => {
     setCart(data.cart);
   };
 
+  const setOrders = (ordersData: Order[]) => {
+    orders.value = [...ordersData];
+  };
+
   const getInitialData = async () => {
     const data = await client.getInitialData();
-    setCart(data.cart);
-    setPromoProducts(data.products);
-    if (data.reviews?.length) {
-      infoStore.setReviews([...data.reviews]);
+    if (!!data.cart?.length) {
+      setCart(data.cart);
     }
+    setPromoProducts(data.products);
+    if (!!data.reviews?.length) {
+      infoStore.setReviews(data.reviews);
+    }
+    if (!!data.orders?.length) {
+      setOrders(data.orders);
+    }
+  };
+
+  const deleteOrder = (id: number) => {
+    orders.value &&
+      (orders.value = [...orders.value.filter((item) => item.id !== id)]);
   };
 
   return {
@@ -109,6 +121,7 @@ export const useProductStore = defineStore("products", () => {
     promoProducts,
     allCountProducts,
     filters,
+    orders,
     addToCart,
     removeFromCart,
     setPromoProducts,
@@ -121,5 +134,7 @@ export const useProductStore = defineStore("products", () => {
     getPromoProducts,
     getCart,
     getInitialData,
+    setOrders,
+    deleteOrder,
   };
 });
